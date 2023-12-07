@@ -90,6 +90,7 @@ jobs:
             }
           EOF
           cat ${{ env.BIN_PATH }}/PKGBUILD
+          ls -la ${{ env.BIN_PATH }}
 
       - name: Create Arch Linux package
         id: validate-pkgbuild
