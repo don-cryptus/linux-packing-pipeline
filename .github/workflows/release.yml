@@ -32,7 +32,7 @@ jobs:
       - name: Prepare arch package metadata
         run: |
           MD5_SUM=$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_NAME }} | awk '{print $1}')
-
+          sed -i "1i md5sums=('${MD5_SUM}')\n" ${{ env.BIN_PATH }}/PKGBUILD
           sed -i "1i pkgver=${{ env.PACKAGE_VERSION }}\n" ${{ env.BIN_PATH }}/PKGBUILD
 
       - name: Validate PKGBUILD
