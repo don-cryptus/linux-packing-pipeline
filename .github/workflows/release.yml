@@ -28,13 +28,6 @@ jobs:
           tag_name: ${{ env.PACKAGE_VERSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Debian release
-        uses: softprops/action-gh-release@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: ./${{ env.DEB_PKG_NAME }}
-          tag_name: ${{ env.PACKAGE_VERSION }}
-
       - name: Prepare arch package metadata
         run: |
           MD5_SUM=$(md5sum build-aux/arch/kinesis-tailr-bin/${DEB_PKG_NAME}  | awk '{print $1}')
