@@ -58,11 +58,7 @@ jobs:
             }
           
           EOF
-          echo ${{ env.BIN_PATH }}
           ls -a -l ${{ env.BIN_PATH }}/
-          echo "----------------------"
-          echo "----------------------"
-          ls -a 
           echo "----------------------"
           echo "----------------------"
           cat ${{ env.BIN_PATH }}/PKGBUILD
@@ -77,6 +73,10 @@ jobs:
 
       - name: Create arch package checksum file
         run: |
+          ls -a -l ${{ env.BIN_PATH }}/
+          echo "----------------------"
+          echo "----------------------"
+          cat ${{ env.BIN_PATH }}/PKGBUILD
           md5sum ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME}} >> ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
 
       - name: Upload Arch Linux release
@@ -90,11 +90,7 @@ jobs:
 
       - name: ls & cat
         run: |
-          echo ${{ env.BIN_PATH }}
           ls -a -l ${{ env.BIN_PATH }}/
-          echo "----------------------"
-          echo "----------------------"
-          ls -a 
           echo "----------------------"
           echo "----------------------"
           cat ${{ env.BIN_PATH }}/PKGBUILD
