@@ -32,13 +32,8 @@ jobs:
       - name: Prepare arch package metadata
         run: |
           MD5_SUM=$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_NAME }} | awk '{print $1}')
-          awk -v md5="$MD5_SUM" -v ver="${{ env.PACKAGE_VERSION }}" -i inplace '{
-            if (NR == 1) {
-              print "md5sums=(\x27" md5 "\x27)"
-              print "pkgver=" ver
-            }
-            print
-          }' ${{ env.BIN_PATH }}/PKGBUILD
+
+          sed -i "1i pkgver=${{ env.PACKAGE_VERSION }}\n" ${{ env.BIN_PATH }}/PKGBUILD
 
       - name: Validate PKGBUILD
         id: validate-pkgbuild
@@ -64,7 +59,7 @@ jobs:
 
       - name: ls & cat
         run: |
-          echo ${{ env.DEB_PATH }}
+          echo ${{ env.BIN_PATH }}
           ls -a -l build-aux/arch/kinesis-tailr-bin/
           echo "----------------------"
           echo "----------------------"

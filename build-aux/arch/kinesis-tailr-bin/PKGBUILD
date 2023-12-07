@@ -2,8 +2,6 @@
 # Contributor: Romain Gallet <rgallet@grumlimited.co.uk>
 _packager="Romain Gallet <rgallet@grumlimited.co.uk>"
 _deb_pkgname=kinesis-tailr
-pkgver=0.5.7
-md5sums=('297997e6bf28ed8c1c7edceb2fe54134')
 pkgname=kinesis-tailr-bin
 pkgrel=1
 pkgdesc='Kinesis tail tool'
