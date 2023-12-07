@@ -23,7 +23,7 @@ jobs:
       description: ${{ steps.get-package.outputs.description }}
       license: ${{ steps.get-package.outputs.license }}
       deb-pkg-name: ${{ steps.get-package.outputs.name }}_${{ steps.get-package.outputs.version}}_amd64.deb # NEEDS TO BE CHANGED DEPENDING ON NAME
-      deb-pkg-path: ./                                                                                      # NEEDS TO BE CHANGED DEPENDING WHERE YOUR FILE IS
+      deb-pkg-path: ./ # NEEDS TO BE CHANGED DEPENDING WHERE YOUR FILE IS
 
     steps:
       - uses: actions/checkout@v3
@@ -94,14 +94,14 @@ jobs:
           cat ${{ env.BIN_PATH }}/PKGBUILD
           ls -la ${{ env.BIN_PATH }}
 
-      - name: Create Arch Linux package
+      - name: create arch package
         uses: 2m/arch-pkgbuild-builder@v1.17
         with:
           debug: true
           target: pkgbuild
           pkgname: ${{ env.BIN_PATH }}/
 
-      - name: Create RPM package
+      - name: create rpm package
         run: |
           sudo apt-get update && sudo apt-get install -y sudo make alien
           alien -r -k --scripts --target=x86_64 ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
@@ -112,7 +112,7 @@ jobs:
           md5sum ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }} > ${{ env.DEB_PKG_NAME }}.md5sum
           md5sum ${{ env.RPM_PKG_NAME }} > ${{ env.RPM_PKG_NAME }}.md5sum
 
-      - name: Upload Arch Linux release
+      - name: upload arch && rpm release
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
