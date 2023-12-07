@@ -8,24 +8,47 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 env:
-  BIN_PATH: clippy-bin
   EMAIL: don.cryptus@gmail.com
-  DESCRIPTION: Kinesis tail tool
   ARCH: x86_64
-  LICENSE: GPLv3
-  DEB_PKG_NAME: clippy_1.2.1_amd64.deb
-  DEB_PKG_RENAMED: clippy-1.2.1-x86_64.deb
-  ARCH_PKG_NAME: clippy-bin-1.2.1-1-x86_64.pkg.tar.zst
-  RPM_PKG_NAME: clippy-1.2.1-1.x86_64.rpm
-  PACKAGE_VERSION: 1.2.1
-  PACKAGE_NAME: clippy
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.get-package.outputs.name }}
+      version: ${{ steps.get-package.outputs.version }}
+      description: ${{ steps.get-package.outputs.description }}
+      license: ${{ steps.get-package.outputs.license }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: get package info
+        id: get-package
+        run: |
+          echo "name=$(node -p "require('./package.json').name")" >> $GITHUB_OUTPUT
+          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+          echo "description=$(node -p "require('./package.json').description")" >> $GITHUB_OUTPUT
+          echo "license=$(node -p "require('./package.json').license")" >> $GITHUB_OUTPUT
+
   publish-release:
+    needs: setup
     permissions:
       contents: write
     runs-on: ubuntu-latest
-
+    env:
+      BIN_PATH: ${{ needs.setup.outputs.name }}-bin
+      DESCRIPTION: ${{ needs.setup.outputs.description }}
+      LICENSE: ${{ needs.setup.outputs.license }}
+      DEB_PKG_NAME: ${{ needs.setup.outputs.name }}_${{ needs.setup.outputs.version }}_amd64.deb
+      DEB_PKG_RENAMED: clippy-1.2.1-x86_64.deb
+      ARCH_PKG_NAME: clippy-bin-1.2.1-1-x86_64.pkg.tar.zst
+      RPM_PKG_NAME: clippy-1.2.1-1.x86_64.rpm
+      PACKAGE_VERSION: 1.2.1
+      PACKAGE_NAME: clippy
     steps:
       - uses: actions/checkout@v3
 
@@ -34,7 +57,7 @@ jobs:
           tag_name: ${{ env.PACKAGE_VERSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name:  copy deb package && create PKGBUILD 
+      - name: copy deb package && create PKGBUILD
         run: |
           mkdir ${{ env.BIN_PATH }}
           cp -fr ${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}
@@ -78,7 +101,6 @@ jobs:
           sudo apt-get install -y sudo make alien
           alien -r -k --scripts --target=x86_64 ${{ env.DEB_PKG_NAME }}
           ls -a
-
 
       - name: Create checksums
         run: |
