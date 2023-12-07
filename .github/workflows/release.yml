@@ -48,18 +48,18 @@ jobs:
           replaces=()
           backup=()
           options=()
-          source=("https://github.com/${{ github.repository }}/releases/download/${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}")
+          source=("https://github.com/${{ github.repository }}/releases/download/${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}")
           noextract=()
-          
+
           build() {
             rm control.tar.zst
             tar xvf data.tar.zst
           }
-          
+
           package() {
             cp -fr usr/ ${pkgdir}
           } 
-          
+
           EOF
 
       - name: ls & cat
