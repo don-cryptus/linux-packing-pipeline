@@ -26,7 +26,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: ./${{ env.DEB_PKG_NAME }}
-          tag_name: ${{ env.DEB_PKG_NAME }}
+          tag_name: ${{ env.PACKAGE_VERSION }}
 
       - name: Prepare arch package metadata
         run: |
