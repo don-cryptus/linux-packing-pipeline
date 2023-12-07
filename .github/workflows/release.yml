@@ -24,6 +24,11 @@ jobs:
 
       - uses: actions/checkout@v3
 
+      - uses: dev-drprasad/delete-tag-and-release@v1.0
+        with:
+          tag_name: ${{ env.PACKAGE_VERSION }} 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload Debian release
         uses: softprops/action-gh-release@v1
         with:
@@ -51,7 +56,7 @@ jobs:
         run: |
           sudo chown -R $USER .
           md5sum build-aux/arch/kinesis-tailr-bin/${ARCH_PKG_NAME} >> build-aux/arch/kinesis-tailr-bin/${ARCH_PKG_NAME}.md5sum
-
+ 
       - name: Upload Arch Linux release
         uses: softprops/action-gh-release@v1
         with:
