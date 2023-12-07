@@ -42,7 +42,7 @@ jobs:
             md5sums=('$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_NAME }} | awk '{print $1}')')
             pkgrel=1
             pkgdesc='Kinesis tail tool'
-            arch=('x86_64')
+            arch=('amd64')
             url="https://github.com/don-cryptus/kinesis-tailr"
             license=('GPLv3')
             source=("$url/releases/download/0.5.7/kinesis-tailr-0.5.7-x86_64.deb")
