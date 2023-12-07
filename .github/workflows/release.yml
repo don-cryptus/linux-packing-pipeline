@@ -67,5 +67,10 @@ jobs:
 
       - name: ls & cat
         run: |
-          ls -l build-aux/arch/kinesis-tailr-bin/
+          ls -a -l build-aux/arch/kinesis-tailr-bin/
+          echo "----------------------"
+          echo "----------------------"
+          ls -a 
+          echo "----------------------"
+          echo "----------------------"
           cat build-aux/arch/kinesis-tailr-bin/PKGBUILD
