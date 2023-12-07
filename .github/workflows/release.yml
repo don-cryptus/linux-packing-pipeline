@@ -16,8 +16,8 @@ jobs:
       PACKAGE_NAME: clippy
       PACKAGE_VERSION: 1.2.1
       PACKAGE_DESCRIPTION: "A collection of lints to catch common mistakes and improve your Rust code"
-      DEB_PKG_NAME: clippy_1.2.1._amd64.deb
-      DEB_PATH: ./clippy_1.2.1._amd64.deb
+      DEB_PKG_NAME: clippy_1.2.1_amd64.deb
+      DEB_PATH: ./clippy_1.2.1_amd64.deb
     steps:
       - uses: actions/checkout@v3
 
