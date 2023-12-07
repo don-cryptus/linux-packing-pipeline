@@ -61,6 +61,7 @@ jobs:
                 cp -fr usr/ \${pkgdir}
             }
           EOF
+          cat ${{ env.BIN_PATH }}/PKGBUILD
 
       - name: Validate PKGBUILD
         id: validate-pkgbuild
