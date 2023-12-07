@@ -6,7 +6,7 @@ pkgname=kinesis-tailr-bin
 pkgrel=1
 pkgdesc='Kinesis tail tool'
 arch=('x86_64')
-url="https://github.com/don-cryptus/=kinesis-tailr"
+url="https://github.com/don-cryptus/kinesis-tailr"
 license=('GPLv3')
 groups=()
 depends=()
@@ -17,7 +17,7 @@ provides=()
 replaces=()
 backup=()
 options=()
-source=("$url/releases/download/0.5.7/=kinesis-tailr-0.5.7-x86_64.deb")
+source=("$url/releases/download/0.5.7/kinesis-tailr-0.5.7-x86_64.deb")
 noextract=()
 
 build() {
