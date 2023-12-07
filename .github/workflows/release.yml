@@ -95,7 +95,6 @@ jobs:
           ls -la ${{ env.BIN_PATH }}
 
       - name: Create Arch Linux package
-        id: validate-pkgbuild
         uses: 2m/arch-pkgbuild-builder@v1.17
         with:
           debug: true
