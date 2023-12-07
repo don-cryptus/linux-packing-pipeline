@@ -28,7 +28,6 @@ jobs:
           tag_name: ${{ env.PACKAGE_VERSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-
       - name: Create PKGBUILD & copy deb package
         run: |
           mkdir ${{ env.BIN_PATH }}
@@ -56,7 +55,7 @@ jobs:
             package() {
                 cp -fr usr/ \${pkgdir}
             }
-          
+
           EOF
           ls -a -l ${{ env.BIN_PATH }}/
           echo "----------------------"
@@ -84,10 +83,3 @@ jobs:
           files: |
             ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}
             ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
-
-      - name: ls & cat
-        run: |
-          ls -a -l ${{ env.BIN_PATH }}/
-          echo "----------------------"
-          echo "----------------------"
-          cat ${{ env.BIN_PATH }}/PKGBUILD
