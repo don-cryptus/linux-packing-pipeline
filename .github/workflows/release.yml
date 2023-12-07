@@ -37,7 +37,7 @@ jobs:
 
       - name: Validate PKGBUILD
         id: validate-pkgbuild
-        uses: 2m/arch-pkgbuild-builder@v1.16
+        uses: 2m/arch-pkgbuild-builder@v1.21
         with:
           debug: true
           target: pkgbuild
