@@ -3,119 +3,25 @@ name: "publish"
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      package_name: ${{ steps.get-package.outputs.name }}
-      package_version: ${{ steps.get-package.outputs.version }}
-      package_description: ${{ steps.get-package.outputs.description }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-      - name: get package info
-        id: get-package
-        run: |
-          echo "name=$(node -p "require('./package.json').name")" >> $GITHUB_OUTPUT
-          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-          echo "description=$(node -p "require('./package.json').description")" >> $GITHUB_OUTPUT
-
-  create-release:
-    needs: setup
+  publish-release:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    outputs:
-      release_id: ${{ steps.create-release.outputs.result }}
     env:
-      PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
-      PACKAGE_NAME: ${{ needs.setup.outputs.package_name }}
+      PACKAGE_NAME: clippy
+      PACKAGE_VERSION: 1.2.1
+      PACKAGE_DESCRIPTION: "A collection of lints to catch common mistakes and improve your Rust code"
+      DEB_PKG_NAME: clippy_1.2.1._amd64.deb
+      DEB_PATH: ./clippy_1.2.1._amd64.deb
     steps:
       - uses: actions/checkout@v3
-      - name: setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-      - name: create release
-        id: create-release
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { data } = await github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: `${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}`,
-              name: `${{ env.PACKAGE_NAME }} v${{ env.PACKAGE_VERSION }}`,
-              body: 'Take a look at the assets to download and install this app.',
-              draft: true,
-              prerelease: false
-            })
-            return data.id
-
-  build-tauri:
-    needs: [setup, create-release]
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.platform }}
-    env:
-      PACKAGE_NAME: ${{ needs.setup.outputs.package_name }}
-      PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
-      PACKAGE_DESCRIPTION: ${{ needs.setup.outputs.package_description }}
-      BINARY_PATH: ./src-tauri/target/release/${{ needs.setup.outputs.package_name }}
-      DEB_PKG_NAME: ${{ needs.setup.outputs.package_name }}_${{ needs.setup.outputs.package_version }}_amd64.deb
-      DEB_PATH: ./src-tauri/target/release/bundle/deb/${{ needs.setup.outputs.package_name }}_${{ needs.setup.outputs.package_version }}_amd64.deb
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Cache target directory
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/release
-            ~/.cargo/registry
-            ~/.cargo/git
-            ./src-tauri/target
-            ./node_modules
-          key: ${{ runner.os }}-target-${{ hashFiles('**/Cargo.lock', '**/package.json') }}
-
-      - name: setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb
-          sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb
-          sudo apt-get install -y openssl libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libxcb-shape0-dev libxcb-xfixes0-dev libxdo-dev
-
-      - name: install frontend dependencies
-        run: yarn install
-
-      - uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
 
       - name: Upload Debian release
-        if: matrix.platform == 'ubuntu-latest'
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -123,7 +29,6 @@ jobs:
           tag_name: ${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}
 
       - name: Create PKGBUILD
-        if: matrix.platform == 'ubuntu-latest'
         run: |
           mkdir -p ./${{ env.PACKAGE_NAME }}-bin
           cat <<EOF > ./${{ env.PACKAGE_NAME }}-bin/PKGBUILD
@@ -158,13 +63,11 @@ jobs:
           EOF
 
       - name: ls & cat
-        if: matrix.platform == 'ubuntu-latest'
         run: |
           ls -a
           cat ./${{ env.PACKAGE_NAME }}-bin/PKGBUILD
 
       - name: Build binary with PKGBUILD
-        if: matrix.platform == 'ubuntu-latest'
         uses: 2m/arch-pkgbuild-builder@v1.21
         with:
           debug: true
@@ -172,11 +75,9 @@ jobs:
           pkgname: ./${{ env.PACKAGE_NAME }}-bin/
 
       - name: ls
-        if: matrix.platform == 'ubuntu-latest'
         run: ls -a ./${{ env.PACKAGE_NAME }}-bin/
 
       - name: Upload Zstandard package to Release
-        if: matrix.platform == 'ubuntu-latest'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -184,25 +85,3 @@ jobs:
           asset_name: ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}-x86_64.pkg.tar.zst
           tag: ${{ github.ref }}
           overwrite: true
-
-  publish-release:
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    needs: [create-release, build-tauri]
-
-    steps:
-      - name: publish release
-        id: publish-release
-        uses: actions/github-script@v6
-        env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
-        with:
-          script: |
-            github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: process.env.release_id,
-              draft: false,
-              prerelease: false
-            })
