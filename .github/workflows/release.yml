@@ -65,6 +65,7 @@ jobs:
       - name: ls & cat
         run: |
           ls -a
+          echo ${{ github.ref }}
           cat ./${{ env.PACKAGE_NAME }}-bin/PKGBUILD
 
       - name: Build binary with PKGBUILD
