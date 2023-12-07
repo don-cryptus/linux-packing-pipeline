@@ -31,6 +31,7 @@ jobs:
       - name: Create PKGBUILD & copy deb package
         run: |
           mkdir ${{ env.BIN_PATH }}
+          chmod 777 ${{ env.BIN_PATH }}
           cp -fr ${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/
           cat <<EOF > ./${{ env.BIN_PATH }}/PKGBUILD
             # Maintainer: Romain Gallet <rgallet@grumlimited.co.uk>
