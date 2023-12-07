@@ -34,7 +34,7 @@ jobs:
           tag_name: ${{ env.PACKAGE_VERSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create PKGBUILD & copy deb package
+      - name:  copy deb package && create PKGBUILD 
         run: |
           mkdir ${{ env.BIN_PATH }}
           cp -fr ${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}
