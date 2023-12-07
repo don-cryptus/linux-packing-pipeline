@@ -36,7 +36,7 @@ jobs:
           pkgname=${{ env.PACKAGE_NAME }}-bin
           pkgrel=1
           pkgdesc='${{ env.PACKAGE_DESCRIPTION }}'
-          pkgver = ${{ env.PACKAGE_VERSION }}
+          pkgver = '${{ env.PACKAGE_VERSION }}'
           arch=('x86_64')
           url="https://github.com/${{ github.repository }}"
           license=('GPLv3')
