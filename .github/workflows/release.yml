@@ -78,7 +78,7 @@ jobs:
             arch=('${{ env.ARCH }}')
             url="https://github.com/${{ github.repository }}"
             license=('${{ env.LICENSE }}')
-            source=("$url/releases/download/${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}")
+            source=("\$url/releases/download/${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}")
 
             build() {
                 rm control.tar.gz
