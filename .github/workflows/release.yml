@@ -8,6 +8,7 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 env:
+  NAME: clippy
   BIN_PATH: clippy-bin
   DEB_PKG_NAME: clippy_1.2.1_amd64.deb
   DEB_PKG_RENAMED: clippy-1.2.1-x86_64.deb
@@ -36,8 +37,8 @@ jobs:
             # Maintainer: Romain Gallet <rgallet@grumlimited.co.uk>
             # Contributor: Romain Gallet <rgallet@grumlimited.co.uk>
             _packager="Romain Gallet <rgallet@grumlimited.co.uk>"
-            _deb_pkgname=clippy
-            pkgname=clippy-bin
+            _deb_pkgname=${{ env.NAME }}
+            pkgname=${{ env.BIN_PATH }}
             pkgver=${{ env.PACKAGE_VERSION }}
             md5sums=('$(md5sum ${{ env.DEB_PKG_NAME }} | awk '{print $1}')')
             pkgrel=1
