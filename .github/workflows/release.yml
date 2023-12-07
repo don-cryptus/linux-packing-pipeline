@@ -55,7 +55,6 @@ jobs:
             package() {
                 cp -fr usr/ \${pkgdir}
             }
-
           EOF
 
       - name: Validate PKGBUILD
