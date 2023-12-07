@@ -16,9 +16,12 @@ env:
 
 jobs:
   publish-release:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
 
     steps:
+
       - uses: actions/checkout@v3
 
       - name: Upload Debian release
