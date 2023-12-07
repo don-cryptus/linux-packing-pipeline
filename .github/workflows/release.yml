@@ -74,8 +74,6 @@ jobs:
               license = GPLv3
               depends = (list any dependencies here)
               source = ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}::https://github.com/${{ github.repository }}/releases/download/${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}
-              sha256sums = (put the sha256sum of the source file here)
-
           pkgname = ${{ env.PACKAGE_NAME }}-bin
           EOF
 
