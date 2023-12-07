@@ -10,9 +10,7 @@ concurrency:
 env:
   BIN_PATH: kinesis-tailr-bin
   DEB_PKG_NAME: kinesis-tailr-0.5.7-x86_64.deb
-  RPM_PKG_NAME: kinesis-tailr-0.5.7-1.x86_64.rpm
   ARCH_PKG_NAME: kinesis-tailr-bin-0.5.7-1-x86_64.pkg.tar.zst
-  PACKAGE_NAME: kinesis-tailr
   PACKAGE_VERSION: 0.5.7
 
 jobs:
