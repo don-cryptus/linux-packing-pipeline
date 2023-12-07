@@ -10,6 +10,7 @@ concurrency:
 env:
   NAME: clippy
   BIN_PATH: clippy-bin
+  EMAIL: don.cryptus@gmail.com
   DEB_PKG_NAME: clippy_1.2.1_amd64.deb
   DEB_PKG_RENAMED: clippy-1.2.1-x86_64.deb
   ARCH_PKG_NAME: clippy-bin-1.2.1-1-x86_64.pkg.tar.zst
@@ -34,9 +35,9 @@ jobs:
           mkdir ${{ env.BIN_PATH }}
           cp -fr ${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}
           cat <<EOF > ./${{ env.BIN_PATH }}/PKGBUILD
-            # Maintainer: Romain Gallet <rgallet@grumlimited.co.uk>
-            # Contributor: Romain Gallet <rgallet@grumlimited.co.uk>
-            _packager="Romain Gallet <rgallet@grumlimited.co.uk>"
+            # Maintainer: Romain Gallet <${{ env.EMAIL }}>
+            # Contributor: Romain Gallet <${{ env.EMAIL }}>
+            _packager="Romain Gallet <${{ env.EMAIL }}>"
             _deb_pkgname=${{ env.NAME }}
             pkgname=${{ env.BIN_PATH }}
             pkgver=${{ env.PACKAGE_VERSION }}
