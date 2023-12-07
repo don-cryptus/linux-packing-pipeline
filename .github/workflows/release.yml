@@ -57,10 +57,6 @@ jobs:
             }
 
           EOF
-          ls -a -l ${{ env.BIN_PATH }}/
-          echo "----------------------"
-          echo "----------------------"
-          cat ${{ env.BIN_PATH }}/PKGBUILD
 
       - name: Validate PKGBUILD
         id: validate-pkgbuild
@@ -70,11 +66,10 @@ jobs:
           target: pkgbuild
           pkgname: ${{ env.BIN_PATH }}/
 
-      - name: Create checksum
+      - name: Create checksums
         run: |
           md5sum ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME}} > ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
           md5sum ${{ env.DEB_PKG_NAME }} > ${{ env.DEB_PKG_NAME }}.md5sum
-
 
       - name: Upload Arch Linux release
         uses: softprops/action-gh-release@v1
