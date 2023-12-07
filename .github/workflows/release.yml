@@ -48,7 +48,7 @@ jobs:
           replaces=()
           backup=()
           options=()
-          source=("https://github.com/${{ github.repository }}/releases/download/${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}")
+          source=("https://github.com/${{ github.repository }}/releases/download/${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}")
           noextract=()
 
           build() {
@@ -61,7 +61,6 @@ jobs:
           } 
 
           EOF
-
       - name: ls & cat
         run: |
           ls -a
