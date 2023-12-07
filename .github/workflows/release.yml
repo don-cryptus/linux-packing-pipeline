@@ -9,6 +9,7 @@ concurrency:
   cancel-in-progress: true
 env:
   DEB_PKG_NAME: kinesis-tailr-0.5.7-x86_64.deb
+  DEB_PATH: build-aux/deb/${DEB_PKG_NAME}
   RPM_PKG_NAME: kinesis-tailr-0.5.7-1.x86_64.rpm
   ARCH_PKG_NAME: kinesis-tailr-bin-0.5.7-1-x86_64.pkg.tar.zst
   PACKAGE_NAME: kinesis-tailr
@@ -58,6 +59,7 @@ jobs:
 
       - name: ls & cat
         run: |
+          echo ${{ env.DEB_PATH }}
           ls -a -l build-aux/arch/kinesis-tailr-bin/
           echo "----------------------"
           echo "----------------------"
