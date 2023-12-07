@@ -46,8 +46,9 @@ jobs:
       BIN_PATH: ${{ needs.setup.outputs.name-bin }}
       DESCRIPTION: ${{ needs.setup.outputs.description }}
       LICENSE: ${{ needs.setup.outputs.license }}
-      DEB_PKG_NAME: ${{ needs.setup.outputs.name }}_${{ needs.setup.outputs.version }}_amd64.deb
-      DEB_PKG_RENAMED: ${{ needs.setup.outputs.name }}-${{ needs.setup.outputs.version }}-${{ needs.setup.outputs.arch }}.deb
+      DEB_PKG_NAME: ${{ needs.setup.outputs.name }}_${{ needs.setup.outputs.version }}_amd64.deb # NEEDS TO BE CHANGED DEPENDING ON NAME
+      DEB_PKG_PATH: ./                                                                           # NEEDS TO BE CHANGED DEPENDING WHERE YOUR FILE IS
+      DEB_PKG_RENAMED: ${{ needs.setup.outputs.name }}-${{ needs.setup.outputs.version }}-${{ needs.setup.outputs.arch }}.deb # leave as is it needs to be renamed for the arch build
       ARCH_PKG_NAME: ${{ needs.setup.outputs.name-bin }}-${{ needs.setup.outputs.version }}-1-${{ needs.setup.outputs.arch }}.pkg.tar.zst
       RPM_PKG_NAME: ${{ needs.setup.outputs.name }}-${{ needs.setup.outputs.version }}-1.${{ needs.setup.outputs.arch }}.rpm
       PACKAGE_VERSION: ${{ needs.setup.outputs.version }}
@@ -63,7 +64,7 @@ jobs:
       - name: copy deb package && create PKGBUILD
         run: |
           mkdir ${{ env.BIN_PATH }}
-          cp -fr ${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}
+          cp -fr ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }} 
           cat <<EOF > ./${{ env.BIN_PATH }}/PKGBUILD
             # Maintainer: ${{ github.repository_owner }} <${{ env.EMAIL }}>
             # Contributor: ${{ github.repository_owner }} <${{ env.EMAIL }}>
@@ -71,13 +72,13 @@ jobs:
             _deb_pkgname=${{ env.PACKAGE_NAME }}
             pkgname=${{ env.BIN_PATH }}
             pkgver=${{ env.PACKAGE_VERSION }}
-            md5sums=('$(md5sum ${{ env.DEB_PKG_NAME }} | awk '{print $1}')')
+            md5sums=('$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}  | awk '{print $1}')')
             pkgrel=1
             pkgdesc='${{ env.DESCRIPTION }}'
             arch=('${{ env.ARCH }}')
             url="https://github.com/${{ github.repository }}"
             license=('${{ env.LICENSE }}')
-            source=("$url/releases/download/${{ env.PACKAGE_VERSION }}/${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}-${{ env.ARCH }}.deb")
+            source=("$url/releases/download/${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}")
 
             build() {
                 rm control.tar.gz
@@ -101,12 +102,12 @@ jobs:
       - name: Create RPM package
         run: |
           sudo apt-get update && sudo apt-get install -y sudo make alien
-          alien -r -k --scripts --target=x86_64 ${{ env.DEB_PKG_NAME }}
+          alien -r -k --scripts --target=x86_64 ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
 
       - name: Create checksums
         run: |
           md5sum ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME}} > ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
-          md5sum ${{ env.DEB_PKG_NAME }} > ${{ env.DEB_PKG_NAME }}.md5sum
+          md5sum ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }} > ${{ env.DEB_PKG_NAME }}.md5sum
           md5sum ${{ env.RPM_PKG_NAME }} > ${{ env.RPM_PKG_NAME }}.md5sum
 
       - name: Upload Arch Linux release
@@ -117,7 +118,8 @@ jobs:
           files: |
             ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}
             ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
-            ${{ env.DEB_PKG_NAME }}
+            ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
             ${{ env.DEB_PKG_NAME }}.md5sum
             ${{ env.RPM_PKG_NAME }}
             ${{ env.RPM_PKG_NAME }}.md5sum
+            ${{ env.BIN_PATH }}/PKGBUILD
