@@ -8,8 +8,8 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 env:
+  BIN_PATH: build-aux/arch/kinesis-tailr-bin
   DEB_PKG_NAME: kinesis-tailr-0.5.7-x86_64.deb
-  DEB_PATH: build-aux/deb/${DEB_PKG_NAME}
   RPM_PKG_NAME: kinesis-tailr-0.5.7-1.x86_64.rpm
   ARCH_PKG_NAME: kinesis-tailr-bin-0.5.7-1-x86_64.pkg.tar.zst
   PACKAGE_NAME: kinesis-tailr
@@ -29,11 +29,16 @@ jobs:
           tag_name: ${{ env.PACKAGE_VERSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Prepare arch package metadata
-      #   run: |
-      #     MD5_SUM=$(md5sum build-aux/arch/kinesis-tailr-bin/${DEB_PKG_NAME}  | awk '{print $1}')
-      #     awk -v q="'" -v MD5_SUM=$MD5_SUM -i inplace 'BEGINFILE{print "md5sums=(" q MD5_SUM q ")"}{print}' build-aux/arch/kinesis-tailr-bin/PKGBUILD
-      #     awk -i inplace 'BEGINFILE{print "pkgver=${{ env.PACKAGE_VERSION }}"}{print}' build-aux/arch/kinesis-tailr-bin/PKGBUILD
+      - name: Prepare arch package metadata
+        run: |
+          MD5_SUM=$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_NAME }} | awk '{print $1}')
+          awk -v md5="$MD5_SUM" -v ver="${{ env.PACKAGE_VERSION }}" -i inplace '{
+            if (NR == 1) {
+              print "md5sums=(\x27" md5 "\x27)"
+              print "pkgver=" ver
+            }
+            print
+          }' ${{ env.BIN_PATH }}/PKGBUILD
 
       - name: Validate PKGBUILD
         id: validate-pkgbuild
