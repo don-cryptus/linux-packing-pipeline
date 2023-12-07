@@ -3,28 +3,20 @@
 _packager="Romain Gallet <rgallet@grumlimited.co.uk>"
 _deb_pkgname=kinesis-tailr
 pkgname=kinesis-tailr-bin
+pkgver=0.5.7
+md5sums=('297997e6bf28ed8c1c7edceb2fe54134')
 pkgrel=1
 pkgdesc='Kinesis tail tool'
 arch=('x86_64')
 url="https://github.com/don-cryptus/kinesis-tailr"
 license=('GPLv3')
-groups=()
-depends=()
-makedepends=()
-checkdepends=()
-optdepends=()
-provides=()
-replaces=()
-backup=()
-options=()
 source=("$url/releases/download/0.5.7/kinesis-tailr-0.5.7-x86_64.deb")
-noextract=()
 
 build() {
-	rm control.tar.gz
-	tar xvf data.tar.gz
+    rm control.tar.gz
+    tar xvf data.tar.gz
 }
 
 package() {
-	cp -fr usr/ ${pkgdir}
+    cp -fr usr/ ${pkgdir}
 }
