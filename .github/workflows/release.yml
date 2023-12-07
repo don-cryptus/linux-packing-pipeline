@@ -15,7 +15,10 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
+      arch: ${{ env.ARCH }}
+      email: ${{ env.EMAIL }}
       name: ${{ steps.get-package.outputs.name }}
+      name-bin: ${{ steps.get-package.outputs.name }}-bin
       version: ${{ steps.get-package.outputs.version }}
       description: ${{ steps.get-package.outputs.description }}
       license: ${{ steps.get-package.outputs.license }}
@@ -40,15 +43,15 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     env:
-      BIN_PATH: ${{ needs.setup.outputs.name }}-bin
+      BIN_PATH: ${{ needs.setup.outputs.name-bin }}
       DESCRIPTION: ${{ needs.setup.outputs.description }}
       LICENSE: ${{ needs.setup.outputs.license }}
       DEB_PKG_NAME: ${{ needs.setup.outputs.name }}_${{ needs.setup.outputs.version }}_amd64.deb
-      DEB_PKG_RENAMED: clippy-1.2.1-x86_64.deb
-      ARCH_PKG_NAME: clippy-bin-1.2.1-1-x86_64.pkg.tar.zst
-      RPM_PKG_NAME: clippy-1.2.1-1.x86_64.rpm
-      PACKAGE_VERSION: 1.2.1
-      PACKAGE_NAME: clippy
+      DEB_PKG_RENAMED: ${{ needs.setup.outputs.name }}-${{ needs.setup.outputs.version }}-${{ needs.setup.outputs.arch }}.deb
+      ARCH_PKG_NAME: ${{ needs.setup.outputs.name-bin }}-${{ needs.setup.outputs.version }}-1-${{ needs.setup.outputs.arch }}.pkg.tar.zst
+      RPM_PKG_NAME: ${{ needs.setup.outputs.name }}-${{ needs.setup.outputs.version }}-1.${{ needs.setup.outputs.arch }}.rpm
+      PACKAGE_VERSION: ${{ needs.setup.outputs.version }}
+      PACKAGE_NAME: ${{ needs.setup.outputs.name }}
     steps:
       - uses: actions/checkout@v3
 
