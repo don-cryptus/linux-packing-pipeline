@@ -112,7 +112,7 @@ jobs:
           md5sum ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }} > ${{ env.DEB_PKG_NAME }}.md5sum
           md5sum ${{ env.RPM_PKG_NAME }} > ${{ env.RPM_PKG_NAME }}.md5sum
 
-      - name: upload arch && rpm release
+      - name: upload arch && rpm release && deb package
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
