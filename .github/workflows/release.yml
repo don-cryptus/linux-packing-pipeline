@@ -64,3 +64,8 @@ jobs:
           files: |
             build-aux/arch/kinesis-tailr-bin/${{ env.ARCH_PKG_NAME }}
             build-aux/arch/kinesis-tailr-bin/${{ env.ARCH_PKG_NAME }}.md5sum
+
+      - name: ls & cat
+        run: |
+          ls -l build-aux/arch/kinesis-tailr-bin/
+          cat build-aux/arch/kinesis-tailr-bin/PKGBUILD
