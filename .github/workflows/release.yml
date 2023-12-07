@@ -10,6 +10,7 @@ concurrency:
 env:
   BIN_PATH: kinesis-tailr-bin
   DEB_PKG_NAME: clippy_1.2.1_amd64.deb
+  DEB_PKG_RENAMED: clippy-1.2.1-x86_64.deb
   ARCH_PKG_NAME: kinesis-tailr-bin-0.5.7-1-x86_64.pkg.tar.zst
   PACKAGE_VERSION: 0.5.7
 
@@ -31,7 +32,7 @@ jobs:
       - name: Create PKGBUILD & copy deb package
         run: |
           mkdir ${{ env.BIN_PATH }}
-          cp -fr ${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/
+          cp -fr ${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}
           cat <<EOF > ./${{ env.BIN_PATH }}/PKGBUILD
             # Maintainer: Romain Gallet <rgallet@grumlimited.co.uk>
             # Contributor: Romain Gallet <rgallet@grumlimited.co.uk>
@@ -42,7 +43,7 @@ jobs:
             md5sums=('$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_NAME }} | awk '{print $1}')')
             pkgrel=1
             pkgdesc='Kinesis tail tool'
-            arch=('amd64')
+            arch=('x86_64')
             url="https://github.com/don-cryptus/kinesis-tailr"
             license=('GPLv3')
             source=("$url/releases/download/0.5.7/kinesis-tailr-0.5.7-x86_64.deb")
