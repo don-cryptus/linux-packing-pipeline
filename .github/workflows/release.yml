@@ -27,11 +27,37 @@ jobs:
           tag_name: ${{ env.PACKAGE_VERSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prepare arch package metadata
+
+      - name: Create PKGBUILD & copy deb package
         run: |
+          cp -fr ${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/
           MD5_SUM=$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_NAME }} | awk '{print $1}')
-          sed -i "1i md5sums=('${MD5_SUM}')\n" ${{ env.BIN_PATH }}/PKGBUILD
-          sed -i "1i pkgver=${{ env.PACKAGE_VERSION }}\n" ${{ env.BIN_PATH }}/PKGBUILD
+          mkdir ${{ env.BIN_PATH }}
+          cat <<EOF > ./${{ env.BIN_PATH }}/PKGBUILD
+            # Maintainer: Romain Gallet <rgallet@grumlimited.co.uk>
+            # Contributor: Romain Gallet <rgallet@grumlimited.co.uk>
+            _packager="Romain Gallet <rgallet@grumlimited.co.uk>"
+            _deb_pkgname=kinesis-tailr
+            pkgname=kinesis-tailr-bin
+            pkgver=${{ env.PACKAGE_VERSION }}
+            md5sums=('${MD5_SUM}')
+            pkgrel=1
+            pkgdesc='Kinesis tail tool'
+            arch=('x86_64')
+            url="https://github.com/don-cryptus/kinesis-tailr"
+            license=('GPLv3')
+            source=("$url/releases/download/0.5.7/kinesis-tailr-0.5.7-x86_64.deb")
+
+            build() {
+                rm control.tar.gz
+                tar xvf data.tar.gz
+            }
+
+            package() {
+                cp -fr usr/ ${pkgdir}
+            }
+          
+          EOF
 
       - name: Validate PKGBUILD
         id: validate-pkgbuild
