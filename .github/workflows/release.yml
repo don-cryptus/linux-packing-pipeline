@@ -39,7 +39,7 @@ jobs:
             _deb_pkgname=clippy
             pkgname=clippy-bin
             pkgver=${{ env.PACKAGE_VERSION }}
-            md5sums=('$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }} | awk '{print $1}')')
+            md5sums=('$(md5sum ${{ env.DEB_PKG_NAME }} | awk '{print $1}')')
             pkgrel=1
             pkgdesc='Kinesis tail tool'
             arch=('x86_64')
