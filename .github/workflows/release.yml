@@ -7,17 +7,17 @@ on:
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
+env:
+  DEB_PKG_NAME: kinesis-tailr-0.5.7-x86_64.deb
+  RPM_PKG_NAME: kinesis-tailr-0.5.7-1.x86_64.rpm
+  ARCH_PKG_NAME: kinesis-tailr-bin-0.5.7-1-x86_64.pkg.tar.zst
+  PACKAGE_NAME: kinesis-tailr
+  PACKAGE_VERSION: 0.5.7
+
 jobs:
   publish-release:
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
-    env:
-      PACKAGE_NAME: clippy
-      PACKAGE_VERSION: 1.2.1
-      PACKAGE_DESCRIPTION: "A collection of lints to catch common mistakes and improve your Rust code"
-      DEB_PKG_NAME: clippy_1.2.1_amd64.deb
-      DEB_PATH: ./clippy_1.2.1_amd64.deb
+
     steps:
       - uses: actions/checkout@v3
 
@@ -25,80 +25,34 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: ${{ env.DEB_PATH }}
-          tag_name: ${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}
+          files: ${{ env.DEB_PKG_NAME }}
+          tag_name: ${{ env.DEB_PKG_NAME }}
 
-      - name: Create PKGBUILD
+      - name: Prepare arch package metadata
         run: |
-          mkdir -p ./${{ env.PACKAGE_NAME }}-bin
-          cat <<EOF > ./${{ env.PACKAGE_NAME }}-bin/PKGBUILD
-          _packager="${{ github.repository_owner }} <don.cryptus@gmail.com>"
-          pkgname=${{ env.PACKAGE_NAME }}-bin
-          pkgrel=1
-          pkgdesc='${{ env.PACKAGE_DESCRIPTION }}'
-          pkgver = '${{ env.PACKAGE_VERSION }}'
-          arch=('x86_64')
-          url="https://github.com/${{ github.repository }}"
-          license=('GPLv3')
-          groups=()
-          depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3')
-          makedepends=()
-          checkdepends=()
-          optdepends=()
-          provides=()
-          replaces=()
-          backup=()
-          options=()
-          source=("https://github.com/${{ github.repository }}/releases/download/${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}")
-          noextract=()
+          wget https://github.com/grumlimited/kinesis-tailr/releases/download/${{ env.PACKAGE_VERSION }}/${DEB_PKG_NAME} -O build-aux/arch/kinesis-tailr-bin/${DEB_PKG_NAME}
 
-          build() {
-            rm control.tar.zst
-            tar xvf data.tar.zst
-          }
+          MD5_SUM=$(md5sum build-aux/arch/kinesis-tailr-bin/${DEB_PKG_NAME}  | awk '{print $1}')
+          awk -v q="'" -v MD5_SUM=$MD5_SUM -i inplace 'BEGINFILE{print "md5sums=(" q MD5_SUM q ")"}{print}' build-aux/arch/kinesis-tailr-bin/PKGBUILD
+          awk -i inplace 'BEGINFILE{print "pkgver=${{ env.PACKAGE_VERSION }}"}{print}' build-aux/arch/kinesis-tailr-bin/PKGBUILD
 
-          package() {
-            cp -fr usr/ ${pkgdir}
-          } 
-
-          EOF
-
-      - name: Create .SRCINFO
-        run: |
-          cat <<EOF > ./${{ env.PACKAGE_NAME }}-bin/.SRCINFO
-          pkgbase = ${{ env.PACKAGE_NAME }}-bin
-              pkgdesc = ${{ env.PACKAGE_DESCRIPTION }}
-              pkgver = ${{ env.PACKAGE_VERSION }}
-              pkgrel = 1
-              url = https://github.com/${{ github.repository }}
-              arch = x86_64
-              license = GPLv3
-              depends = (list any dependencies here)
-              source = ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}::https://github.com/${{ github.repository }}/releases/download/${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}
-          pkgname = ${{ env.PACKAGE_NAME }}-bin
-          EOF
-
-      - name: ls & cat
-        run: |
-          cat ./${{ env.PACKAGE_NAME }}-bin/PKGBUILD
-          echo "---------------------"
-          cat ./${{ env.PACKAGE_NAME }}-bin/.SRCINFO
-
-      - name: Build binary with PKGBUILD
-        uses: 2m/arch-pkgbuild-builder@v1.21
+      - name: Validate PKGBUILD
+        id: validate-pkgbuild
+        uses: 2m/arch-pkgbuild-builder@v1.16
         with:
           debug: true
           target: pkgbuild
-          pkgname: ./${{ env.PACKAGE_NAME }}-bin/
+          pkgname: build-aux/arch/kinesis-tailr-bin/
 
-      - name: ls
-        run: ls -a ./${{ env.PACKAGE_NAME }}-bin/
+      - name: Create arch package checksum file
+        run: |
+          sudo chown -R $USER .
+          md5sum build-aux/arch/kinesis-tailr-bin/${ARCH_PKG_NAME} >> build-aux/arch/kinesis-tailr-bin/${ARCH_PKG_NAME}.md5sum
 
-      - name: Upload Zstandard package to Release
-        uses: svenstaro/upload-release-action@v2
+      - name: Upload Arch Linux release
+        uses: softprops/action-gh-release@v1
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./${{ env.PACKAGE_NAME }}-bin/${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}-x86_64.pkg.tar.zst
-          asset_name: ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}-x86_64.pkg.tar.zst
-          tag: ${{ github.ref }}
-          overwrite: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            build-aux/arch/kinesis-tailr-bin/${{ env.ARCH_PKG_NAME }}
+            build-aux/arch/kinesis-tailr-bin/${{ env.ARCH_PKG_NAME }}.md5sum
