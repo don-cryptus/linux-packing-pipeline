@@ -106,7 +106,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y sudo make alien
           alien -r -k --scripts --target=x86_64 ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
 
-      - name: Create checksums
+      - name: create checksums
         run: |
           md5sum ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME}} > ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
           md5sum ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }} > ${{ env.DEB_PKG_NAME }}.md5sum
