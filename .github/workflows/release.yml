@@ -25,7 +25,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: ${{ env.DEB_PKG_NAME }}
+          files: ./${{ env.DEB_PKG_NAME }}
           tag_name: ${{ env.DEB_PKG_NAME }}
 
       - name: Prepare arch package metadata
