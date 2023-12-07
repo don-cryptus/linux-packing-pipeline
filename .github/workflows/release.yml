@@ -90,7 +90,7 @@ jobs:
           EOF
           cat ${{ env.BIN_PATH }}/PKGBUILD
 
-      - name: Validate PKGBUILD
+      - name: Create Arch Linux package
         id: validate-pkgbuild
         uses: 2m/arch-pkgbuild-builder@v1.17
         with:
@@ -98,12 +98,10 @@ jobs:
           target: pkgbuild
           pkgname: ${{ env.BIN_PATH }}/
 
-      - name: System dependencies
+      - name: Create RPM package
         run: |
-          sudo apt-get update
-          sudo apt-get install -y sudo make alien
+          sudo apt-get update && sudo apt-get install -y sudo make alien
           alien -r -k --scripts --target=x86_64 ${{ env.DEB_PKG_NAME }}
-          ls -a
 
       - name: Create checksums
         run: |
