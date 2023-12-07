@@ -33,6 +33,7 @@ jobs:
           mkdir ${{ env.BIN_PATH }}
           chmod 777 ${{ env.BIN_PATH }}
           cp -fr ${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/
+
           cat <<EOF > ./${{ env.BIN_PATH }}/PKGBUILD
             # Maintainer: Romain Gallet <rgallet@grumlimited.co.uk>
             # Contributor: Romain Gallet <rgallet@grumlimited.co.uk>
@@ -58,6 +59,14 @@ jobs:
             }
           
           EOF
+          echo ${{ env.BIN_PATH }}
+          ls -a -l ${{ env.BIN_PATH }}/
+          echo "----------------------"
+          echo "----------------------"
+          ls -a 
+          echo "----------------------"
+          echo "----------------------"
+          cat ${{ env.BIN_PATH }}/PKGBUILD
 
       - name: Validate PKGBUILD
         id: validate-pkgbuild
