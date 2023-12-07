@@ -47,7 +47,7 @@ jobs:
             pkgrel=1
             pkgdesc='${{ env.DESCRIPTION }}'
             arch=('${{ env.ARCH }}')
-            url="https://github.com/don-cryptus/kinesis-tailr"
+            url="https://github.com/${{ github.repository }}"
             license=('GPLv3')
             source=("$url/releases/download/1.2.1/clippy-1.2.1-x86_64.deb")
 
