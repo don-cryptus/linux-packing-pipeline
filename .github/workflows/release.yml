@@ -61,11 +61,29 @@ jobs:
           } 
 
           EOF
+
+      - name: Create .SRCINFO
+        run: |
+          cat <<EOF > ./${{ env.PACKAGE_NAME }}-bin/.SRCINFO
+          pkgbase = ${{ env.PACKAGE_NAME }}-bin
+              pkgdesc = ${{ env.PACKAGE_DESCRIPTION }}
+              pkgver = ${{ env.PACKAGE_VERSION }}
+              pkgrel = 1
+              url = https://github.com/${{ github.repository }}
+              arch = x86_64
+              license = GPLv3
+              depends = (list any dependencies here)
+              source = ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}::https://github.com/${{ github.repository }}/releases/download/${{ env.PACKAGE_NAME }}-v${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_NAME }}
+              sha256sums = (put the sha256sum of the source file here)
+
+          pkgname = ${{ env.PACKAGE_NAME }}-bin
+          EOF
+
       - name: ls & cat
         run: |
-          ls -a
-          echo ${{ github.ref }}
           cat ./${{ env.PACKAGE_NAME }}-bin/PKGBUILD
+          echo "---------------------"
+          cat ./${{ env.PACKAGE_NAME }}-bin/.SRCINFO
 
       - name: Build binary with PKGBUILD
         uses: 2m/arch-pkgbuild-builder@v1.21
