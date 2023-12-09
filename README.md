@@ -14,3 +14,6 @@ DEB Converter is a powerful tool designed for converting `.deb` packages into fo
 ## Prerequisites
 
 Before using DEB Converter, ensure that you have a `.deb` package file ready for conversion. and change the variables in the workflow
+
+[real example (rust tauri)](https://github.com/don-cryptus/clippy)
+
