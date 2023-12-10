@@ -76,6 +76,7 @@ jobs:
             pkgver=${{ env.PACKAGE_VERSION }}
             md5sums=('$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}  | awk '{print $1}')')
             pkgrel=1
+            depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3')
             pkgdesc='${{ env.DESCRIPTION }}'
             arch=('${{ env.ARCH }}')
             url="https://github.com/${{ github.repository }}"
