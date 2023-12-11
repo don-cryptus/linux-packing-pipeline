@@ -107,7 +107,7 @@ jobs:
           sudo apt update && sudo apt install -y sudo make alien
           alien -r -k ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
           alien -r --generate ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
-          ls -a
+          ls -la ${{ env.PACKAGE_NAME}}-${{ env.PACKAGE_VERSION }}
           
       - name: create checksums
         run: |
