@@ -55,6 +55,7 @@ jobs:
       RPM_PKG_NAME: ${{ needs.setup.outputs.name }}-${{ needs.setup.outputs.version }}-1.${{ needs.setup.outputs.arch }}.rpm
       PACKAGE_VERSION: ${{ needs.setup.outputs.version }}
       PACKAGE_NAME: ${{ needs.setup.outputs.name }}
+      PACKAGE_FOLDER_NAME: ${{ needs.setup.outputs.name }}-${{ needs.setup.outputs.version }}
     steps:
       - uses: actions/checkout@v3
 
@@ -107,7 +108,8 @@ jobs:
           sudo apt update && sudo apt install -y sudo make alien
           alien -r -k ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
           alien -r --generate ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
-          ls -la ${{ env.PACKAGE_NAME}}-${{ env.PACKAGE_VERSION }}
+          ls -la ${{ env.PACKAGE_FOLDER_NAME}}
+          cat ./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
           
       - name: create checksums
         run: |
