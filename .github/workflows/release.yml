@@ -106,8 +106,8 @@ jobs:
       - name: create rpm package
         run: |
           sudo apt update && sudo apt install -y sudo make alien
-          alien -r -k ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
-          alien -r --generate ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
+          sudo alien -r -k ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
+          sudo alien -r --generate ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
           ls -la ${{ env.PACKAGE_FOLDER_NAME}}
           cat ./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
           
