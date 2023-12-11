@@ -104,9 +104,11 @@ jobs:
 
       - name: create rpm package
         run: |
-          sudo apt-get update && sudo apt-get install -y sudo make alien
-          alien -r -k --scripts --target=x86_64 ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
-
+          sudo apt update && sudo apt install -y sudo make alien
+          alien -r -k ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
+          alien -r --generate ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
+          ls -a
+          
       - name: create checksums
         run: |
           md5sum ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME}} > ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
