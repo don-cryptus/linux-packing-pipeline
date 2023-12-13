@@ -111,8 +111,12 @@ jobs:
           sed -i '/^Group: Converted\/unknown/a Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool' "$SPEC_FILE"
           sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a %{_topdir}/${{ env.PACKAGE_FOLDER_NAME }}/usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
 
-          FILTERED_FILES=$(awk '/^%files/,0' "$SPEC_FILE" | grep -E '(\.|\bclippy$)')
-          sed -i "/^%files/,/^$/c\%files\n$FILTERED_FILES" "$SPEC_FILE"
+          sed -i '/^%files/,/^$/d' "$SPEC_FILE"
+          
+          awk '/^%files/,0' "$SPEC_FILE" | grep -E '(\.|\bclippy$)' | while read -r line; do
+            sed -i "/^%changelog/i $line" "$SPEC_FILE"
+          done
+          sed -i '/^%changelog/i %files' "$SPEC_FILE"
 
           ls -la ${{ env.PACKAGE_FOLDER_NAME}}
           cat "$SPEC_FILE"
