@@ -23,7 +23,7 @@ jobs:
       deb_pkg_name: ${{ env.NAME }}_${{ env.VERSION }}_amd64.deb
       deb_pkg_renamed: ${{ env.NAME }}-${{ env.VERSION }}-${{ env.ARCH }}.deb
       arch_pkg_name: ${{ env.NAME }}-bin-${{ env.VERSION }}-1-${{ env.ARCH }}.pkg.tar.zst
-      rpm_pkg_name: ${{ env.NAME }}-${{ env.VERSION }}-1.${{ env.ARCH }}.rpm
+      rpm_pkg_name: /RPMS/${{ env.NAME }}-${{ env.VERSION }}-1.${{ env.ARCH }}.rpm
       folder_name: ${{ env.NAME }}-${{ env.VERSION }}
     steps:
       - uses: actions/checkout@v4
@@ -36,42 +36,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # - name: copy deb package && create PKGBUILD
-      #   run: |
-      #     mkdir -p ${{ needs.setup.outputs.name_bin }}
-      #     cp -fr ${{ env.DEB_PKG_PATH }}/${{ needs.setup.outputs.deb_pkg_name}} ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
-      #     cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/PKGBUILD
-      #       pkgname=${{ needs.setup.outputs.name_bin }}
-      #       pkgver=${{ env.VERSION }}
-      #       md5sums=('$(md5sum ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}  | awk '{print $1}')')
-      #       pkgrel=1
-      #       depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3' 'xdotool')
-      #       pkgdesc='${{ env.DESCRIPTION }}'
-      #       arch=('${{ env.ARCH }}')
-      #       url="https://github.com/${{ github.repository }}"
-      #       license=('${{ env.LICENSE }}')
-      #       source=("\$url/releases/download/${{ env.VERSION }}/${{ needs.setup.outputs.deb_pkg_renamed }}")
+      - name: copy deb package && create PKGBUILD
+        run: |
+          mkdir -p ${{ needs.setup.outputs.name_bin }}
+          cp -fr ${{ env.DEB_PKG_PATH }}/${{ needs.setup.outputs.deb_pkg_name}} ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
+          cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/PKGBUILD
+            pkgname=${{ needs.setup.outputs.name_bin }}
+            pkgver=${{ env.VERSION }}
+            md5sums=('$(md5sum ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}  | awk '{print $1}')')
+            pkgrel=1
+            depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3' 'xdotool')
+            pkgdesc='${{ env.DESCRIPTION }}'
+            arch=('${{ env.ARCH }}')
+            url="https://github.com/${{ github.repository }}"
+            license=('${{ env.LICENSE }}')
+            source=("\$url/releases/download/${{ env.VERSION }}/${{ needs.setup.outputs.deb_pkg_renamed }}")
 
-      #       build() {
-      #           rm control.tar.gz
-      #           tar xvf data.tar.gz
-      #       }
+            build() {
+                rm control.tar.gz
+                tar xvf data.tar.gz
+            }
 
-      #       package() {
-      #           cp -fr usr/ \${pkgdir}
-      #       }
-      #     EOF
-      #     cat ${{ needs.setup.outputs.name_bin }}/PKGBUILD
-      #     ls -la ${{ needs.setup.outputs.name_bin }}
-  
+            package() {
+                cp -fr usr/ \${pkgdir}
+            }
+          EOF
+          cat ${{ needs.setup.outputs.name_bin }}/PKGBUILD
+          ls -la ${{ needs.setup.outputs.name_bin }}
 
-      # - name: create arch package
-      #   uses: 2m/arch-pkgbuild-builder@v1.17
-      #   with:
-      #     debug: true
-      #     target: pkgbuild
-      #     pkgname: ${{ needs.setup.outputs.name_bin }}/
-
+      - name: create arch package
+        uses: 2m/arch-pkgbuild-builder@v1.17
+        with:
+          debug: true
+          target: pkgbuild
+          pkgname: ${{ needs.setup.outputs.name_bin }}/
 
       - name: copy deb package && create .spec file
         run: |
@@ -85,13 +83,13 @@ jobs:
           Requires: libappindicator-gtk3, webkit2gtk, gtk3, xdotool
           License: ${{ env.LICENSE }}
           Source0: ${{ needs.setup.outputs.deb_pkg_renamed }}
-          
+
           %description
           ${{ env.DESCRIPTION }}
-          
+
           %prep
           ar x %{SOURCE0}
-          
+
           %build
           rm -rf control.tar.gz
           tar xvf data.tar.gz
@@ -106,15 +104,21 @@ jobs:
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
 
-
       - uses: Antikythera/build-rpm@latest
         id: build_rpm
         with:
           spec_file: ${{ needs.setup.outputs.name_bin }}/rpm.spec
-          sources:  |
+          sources: |
             ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
 
-
-      - name: read rpm package name
-        run: |
-          ls -la RPMS
+      - name: upload arch && rpm release && deb package
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: v${{ env.VERSION }}
+          files: |
+            ${{ env.NAME }}/${{ needs.setup.outputs.arch_pkg_name }}
+            ${{ env.DEB_PKG_PATH }}${{ needs.setup.outputs.deb_pkg_name }}
+            ${{ needs.setup.outputs.rpm_pkg_name }}
+            ${{ env.NAME }}/PKGBUILD
+            ${{ env.NAME }}/rpm.spec
