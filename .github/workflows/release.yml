@@ -127,7 +127,7 @@ jobs:
           } >> "$SPEC_FILE"
       
           cat "$SPEC_FILE"
-          # chmod recurcyve 777
+
           chmod -R 777 ${{ env.PACKAGE_FOLDER_NAME }}
           cd ${{ env.PACKAGE_FOLDER_NAME }}
 
