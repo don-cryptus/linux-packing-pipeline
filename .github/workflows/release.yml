@@ -103,6 +103,9 @@ jobs:
             %install
             cp -fr usr/ %{buildroot}
 
+            %files
+            %{_bindir}/clippy
+
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
           ls -la ${{ needs.setup.outputs.name_bin }}
