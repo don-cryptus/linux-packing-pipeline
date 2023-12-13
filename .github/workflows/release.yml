@@ -117,8 +117,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: v${{ env.VERSION }}
           files: |
-            ${{ env.NAME }}/${{ needs.setup.outputs.arch_pkg_name }}
+            ${{needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.arch_pkg_name }}
             ${{ env.DEB_PKG_PATH }}${{ needs.setup.outputs.deb_pkg_name }}
             ${{ needs.setup.outputs.rpm_pkg_name }}
-            ${{ env.NAME }}/PKGBUILD
-            ${{ env.NAME }}/rpm.spec
+            ${{ needs.setup.outputs.name_bin}}/PKGBUILD
+            ${{ needs.setup.outputs.name_bin }}/rpm.spec
