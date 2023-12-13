@@ -112,7 +112,7 @@ jobs:
           sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a %{_topdir}/${{ env.PACKAGE_FOLDER_NAME }}/usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
 
           FILTERED_FILES=$(awk '/^%files/,0' "$SPEC_FILE" | grep -E '(\.|\bclippy$)')
-          sed -i '/^%files/,/^$/c\%files\n'"$FILTERED_FILES" "$SPEC_FILE"
+          sed -i "/^%files/,/^$/c\%files\n$FILTERED_FILES" "$SPEC_FILE"
 
           ls -la ${{ env.PACKAGE_FOLDER_NAME}}
           cat "$SPEC_FILE"
