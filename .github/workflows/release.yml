@@ -119,3 +119,6 @@ jobs:
           spec_file: ${{ needs.setup.outputs.name_bin }}/rpm.spec
           sources:  |
             ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
+          variables: |
+            _version=1.0.1
+            _foo=bar
