@@ -63,6 +63,7 @@ jobs:
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/PKGBUILD
           ls -la ${{ needs.setup.outputs.name_bin }}
+  
 
       - name: create arch package
         uses: 2m/arch-pkgbuild-builder@v1.17
@@ -70,3 +71,50 @@ jobs:
           debug: true
           target: pkgbuild
           pkgname: ${{ needs.setup.outputs.name_bin }}/
+
+
+      - name: copy deb package && create .spec file
+        run: |
+          mkdir ${{ needs.setup.outputs.name_bin }}
+          cp -fr ${{ env.DEB_PKG_PATH }}/${{ needs.setup.outputs.deb_pkg_name}} ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
+          cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/rpm.spec
+            Name:       ${{ env.NAME }}
+            Version:    ${{ env.VERSION }}
+            Release:    1
+            Summary:    ${{ env.DESCRIPTION }}
+
+            Requires:   libappindicator-gtk3, webkit2gtk, gtk3, xdotool
+            
+            License:    ${{ env.LICENSE }}
+            Source0:    ${{ needs.setup.outputs.deb_pkg_renamed }}
+            
+            BuildArch:  ${{ env.ARCH }}
+            
+            %description
+            ${{ env.DESCRIPTION }}
+            
+            %prep
+            %setup -q 
+            
+            %build
+            # Extract the Debian package
+            rm -rf control.tar.gz
+            tar xvf %{SOURCE0}
+                        
+            %install
+            # Copy the extracted files to the build root
+            cp -fr usr/ %{buildroot}
+            
+            %files
+            $(find usr/ -type f | sed 's/^/\//')
+            $(find usr/ -type d | sed 's/^/%dir \//')
+          EOF
+          cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
+          ls -la ${{ needs.setup.outputs.name_bin }}
+
+
+      - uses: Antikythera/build-rpm@latest
+        id: build_rpm
+        with:
+          spec_file: ${{ needs.setup.outputs.name_bin }}/rpm.spec
+          sources:  ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
