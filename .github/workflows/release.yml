@@ -10,159 +10,61 @@ concurrency:
 env:
   EMAIL: don.cryptus@gmail.com
   ARCH: x86_64
+  NAME: clippy
+  NAME_BIN: clippy-bin
+  VERSION: 1.2.3
+  DESCRIPTION: "A clipboard manager for Linux"
+  LICENSE: MIT
+  DEB_PKG_NAME: clippy_1.2.3_amd64.deb
+  DEB_PKG_PATH: ./ # NEEDS TO BE CHANGED DEPENDING WHERE YOUR FILE IS
+  DEB_PKG_RENAMED: clippy-1.2.3-x86_64.deb # leave as is it needs to be renamed for the arch build
+  ARCH_PKG_NAME: clippy-bin-1.2.3-1-x86_64.pkg.tar.zst
+  RPM_PKG_NAME: clippy-1.2.3-1.x86_64.rpm
+  FOLDER_NAME: clippy-1.2.3
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      arch: ${{ env.ARCH }}
-      email: ${{ env.EMAIL }}
-      name: ${{ steps.get-package.outputs.name }}
-      name-bin: ${{ steps.get-package.outputs.name }}-bin
-      version: ${{ steps.get-package.outputs.version }}
-      description: ${{ steps.get-package.outputs.description }}
-      license: ${{ steps.get-package.outputs.license }}
-      deb-pkg-name: ${{ steps.get-package.outputs.name }}_${{ steps.get-package.outputs.version}}_amd64.deb # NEEDS TO BE CHANGED DEPENDING ON NAME
-      deb-pkg-path: ./ # NEEDS TO BE CHANGED DEPENDING WHERE YOUR FILE IS
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-      - name: get package info
-        id: get-package
-        run: |
-          echo "name=$(node -p "require('./package.json').name")" >> $GITHUB_OUTPUT
-          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-          echo "description=$(node -p "require('./package.json').description")" >> $GITHUB_OUTPUT
-          echo "license=$(node -p "require('./package.json').license")" >> $GITHUB_OUTPUT
-
   publish-release:
-    needs: setup
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    env:
-      BIN_PATH: ${{ needs.setup.outputs.name-bin }}
-      DESCRIPTION: ${{ needs.setup.outputs.description }}
-      LICENSE: ${{ needs.setup.outputs.license }}
-      DEB_PKG_NAME: ${{ needs.setup.outputs.deb-pkg-name }}
-      DEB_PKG_PATH: ${{ needs.setup.outputs.deb-pkg-path }}
-      DEB_PKG_RENAMED: ${{ needs.setup.outputs.name }}-${{ needs.setup.outputs.version }}-${{ needs.setup.outputs.arch }}.deb # leave as is it needs to be renamed for the arch build
-      ARCH_PKG_NAME: ${{ needs.setup.outputs.name-bin }}-${{ needs.setup.outputs.version }}-1-${{ needs.setup.outputs.arch }}.pkg.tar.zst
-      RPM_PKG_NAME: ${{ needs.setup.outputs.name }}-${{ needs.setup.outputs.version }}-1.${{ needs.setup.outputs.arch }}.rpm
-      PACKAGE_VERSION: ${{ needs.setup.outputs.version }}
-      PACKAGE_NAME: ${{ needs.setup.outputs.name }}
-      PACKAGE_FOLDER_NAME: ${{ needs.setup.outputs.name }}-${{ needs.setup.outputs.version }}
     steps:
       - uses: actions/checkout@v3
 
-      - uses: dev-drprasad/delete-tag-and-release@v1.0
-        with:
-          tag_name: ${{ env.PACKAGE_VERSION }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: copy deb package && create PKGBUILD
-      #   run: |
-      #     mkdir ${{ env.BIN_PATH }}
-      #     cp -fr ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}
-      #     cat <<EOF > ./${{ env.BIN_PATH }}/PKGBUILD
-      #       # Maintainer: ${{ github.repository_owner }} <${{ env.EMAIL }}>
-      #       # Contributor: ${{ github.repository_owner }} <${{ env.EMAIL }}>
-      #       _packager="${{ github.repository_owner }} <${{ env.EMAIL }}>"
-      #       _deb_pkgname=${{ env.PACKAGE_NAME }}
-      #       pkgname=${{ env.BIN_PATH }}
-      #       pkgver=${{ env.PACKAGE_VERSION }}
-      #       md5sums=('$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}  | awk '{print $1}')')
-      #       pkgrel=1
-      #       depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3', 'xdotool')
-      #       pkgdesc='${{ env.DESCRIPTION }}'
-      #       arch=('${{ env.ARCH }}')
-      #       url="https://github.com/${{ github.repository }}"
-      #       license=('${{ env.LICENSE }}')
-      #       source=("\$url/releases/download/${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_RENAMED }}")
-
-      #       build() {
-      #           rm control.tar.gz
-      #           tar xvf data.tar.gz
-      #       }
-
-      #       package() {
-      #           cp -fr usr/ \${pkgdir}
-      #       }
-      #     EOF
-      #     cat ${{ env.BIN_PATH }}/PKGBUILD
-      #     ls -la ${{ env.BIN_PATH }}
-
-      # - name: create arch package
-      #   uses: 2m/arch-pkgbuild-builder@v1.17
-      #   with:
-      #     debug: true
-      #     target: pkgbuild
-      #     pkgname: ${{ env.BIN_PATH }}/
-
-      - name: create rpm package
+      - name: copy deb package && create PKGBUILD
         run: |
-          sudo apt update && sudo apt install -y alien
-          alien -r --generate ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
-          SPEC_FILE=./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
+          mkdir ${{ env.NAME_BIN }}
+          cp -fr ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }} ${{ env.NAME_BIN }}/${{ env.DEB_PKG_RENAMED }}
+          cat <<EOF > ./${{ env.NAME_BIN }}/PKGBUILD
+            # Maintainer: ${{ github.repository_owner }} <${{ env.EMAIL }}>
+            # Contributor: ${{ github.repository_owner }} <${{ env.EMAIL }}>
+            _packager="${{ github.repository_owner }} <${{ env.EMAIL }}>"
+            _deb_pkgname=${{ env.NAME }}
+            pkgname=${{ env.NAME_BIN }}
+            pkgver=${{ env.VERSION }}
+            md5sums=('$(md5sum ${{ env.NAME_BIN }}/${{ env.DEB_PKG_RENAMED }}  | awk '{print $1}')')
+            pkgrel=1
+            depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3', 'xdotool')
+            pkgdesc='${{ env.DESCRIPTION }}'
+            arch=('${{ env.ARCH }}')
+            url="https://github.com/${{ github.repository }}"
+            license=('${{ env.LICENSE }}')
+            source=("\$url/releases/download/${{ env.VERSION }}/${{ env.DEB_PKG_RENAMED }}")
 
-          # add dependencies
-          sed -i '/^Group: Converted\/unknown/a Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool' "$SPEC_FILE"
-          # add install section
-          sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
+            build() {
+                rm control.tar.gz
+                tar xvf data.tar.gz
+            }
 
-          # Extract and filter the content of the %files section
-          FILTERED_CONTENT=$(awk '/^%files/,/^$/{if (!/^%files/ && !/^$/) print}' "$SPEC_FILE" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
+            package() {
+                cp -fr usr/ \${pkgdir}
+            }
+          EOF
+          cat ${{ env.NAME_BIN }}/PKGBUILD
+          ls -la ${{ env.NAME_BIN }}
 
-          # Remove the existing %files section
-          sed -i '/^%files/,/^$/d' "$SPEC_FILE"
-
-          # Append the new %files section with the filtered content
-          {
-              echo "%files"
-              echo "$FILTERED_CONTENT"
-          } >> "$SPEC_FILE"
-
-          cat "$SPEC_FILE"
-
-          chmod -R 777 ${{ env.PACKAGE_FOLDER_NAME }}
-          cd ${{ env.PACKAGE_FOLDER_NAME }}
-
-      - uses: Antikythera/build-rpm@v1
-        id: build_rpm
+      - name: create arch package
+        uses: 2m/arch-pkgbuild-builder@v1.17
         with:
-          spec_file: ${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
-          sources: |
-            ${{ env.PACKAGE_FOLDER_NAME }}
-
-      # - name: build RPM package
-      #   id: rpm_build
-      #   uses: naveenrajm7/rpmbuild@master
-      #   with:
-      #       spec_file: "${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec"
-
-      - name: test
-        run: |
-          ls -a
-      # - name: create checksums
-      #   run: |
-      #     md5sum ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME}} > ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
-      #     md5sum ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }} > ${{ env.DEB_PKG_NAME }}.md5sum
-      #     md5sum ${{ env.RPM_PKG_NAME }} > ${{ env.RPM_PKG_NAME }}.md5sum
-
-      # - name: upload arch && rpm release && deb package
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     tag_name: ${{ env.PACKAGE_VERSION }}
-      #     files: |
-      #       ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}
-      #       ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
-      #       ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
-      #       ${{ env.DEB_PKG_NAME }}.md5sum
-      #       ${{ env.RPM_PKG_NAME }}
-      #       ${{ env.RPM_PKG_NAME }}.md5sum
-      #       ${{ env.BIN_PATH }}/PKGBUILD
+          debug: true
+          target: pkgbuild
+          pkgname: ${{ env.NAME_BIN }}/
