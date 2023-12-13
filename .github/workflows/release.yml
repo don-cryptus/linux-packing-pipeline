@@ -25,7 +25,7 @@ jobs:
       deb_pkg_name: ${{ env.NAME }}_${{ env.VERSION }}_amd64.deb
       deb_pkg_renamed: ${{ env.NAME }}-${{ env.VERSION }}-${{ env.ARCH }}.deb
       arch_pkg_name: ${{ env.NAME }}-bin-${{ env.VERSION }}-1-${{ env.ARCH }}.pkg.tar.zst
-      rpm_pkg_name: /RPMS/${{ env.NAME }}-${{ env.VERSION }}-1.${{ env.ARCH }}.rpm
+      rpm_pkg_name: RPMS/${{ env.NAME }}-${{ env.VERSION }}-1.${{ env.ARCH }}.rpm
       folder_name: ${{ env.NAME }}-${{ env.VERSION }}
     steps:
       - uses: actions/checkout@v4
