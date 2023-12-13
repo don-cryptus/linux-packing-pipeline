@@ -100,8 +100,8 @@ jobs:
           cp -fr usr/ %{buildroot}
 
           %files
-          %{_bindir}/clippy
-          /usr/share/applications/clippy.desktop
+          %{_bindir}/${{ env.NAME }}
+          /usr/share/applications/${{ env.NAME }}.desktop
           /usr/share/icons/hicolor/**/*
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
@@ -113,3 +113,9 @@ jobs:
           spec_file: ${{ needs.setup.outputs.name_bin }}/rpm.spec
           sources:  |
             ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
+
+
+      - name: read rpm package name
+        run: |
+          ls -la ${{ needs.setup.outputs.name_bin }}
+          ls -a
