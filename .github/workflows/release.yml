@@ -80,6 +80,7 @@ jobs:
           cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/rpm.spec
           Name: ${{ env.NAME }}
           Version: ${{ env.VERSION }}
+          BuildArch: ${{ env.ARCH }}
           Release: 1
           Summary: ${{ env.DESCRIPTION }}
           Requires: ${{ env.DEPENDENCIES_RPM }}
