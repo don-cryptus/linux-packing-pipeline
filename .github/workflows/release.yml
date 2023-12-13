@@ -114,12 +114,13 @@ jobs:
           # add install section
           sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a %{_topdir}/${{ env.PACKAGE_FOLDER_NAME }}/usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
 
-          FILTERED_CONTENT=$(echo "$(awk '/^%files/{flag=1; next} flag' "$SPEC_FILE")" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
-          sed -i '/^%files/,/^$/d' "$SPEC_FILE"
-          echo "%files" >> "$SPEC_FILE"
-          echo "$FILTERED_CONTENT" | while IFS= read -r line; do
-              echo "$line" >> "$SPEC_FILE"
-          done
+          # Extract and filter the content of the %files section
+          FILTERED_CONTENT=$(awk '/^%files/,/^$/{if (!/^%files/ && !/^$/) print}' "$SPEC_FILE" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
+
+          # Replace the existing %files section with the filtered content
+          sed -i "/^%files/,/^$/c\
+          %files\n$FILTERED_CONTENT" "$SPEC_FILE"
+
       
           cat "$SPEC_FILE"
       # - name: create checksums
