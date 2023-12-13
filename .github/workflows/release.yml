@@ -105,32 +105,21 @@ jobs:
 
       - name: create rpm package
         run: |
-          # Update and install necessary packages
           sudo apt update && sudo apt install -y alien
-      
-          # Convert Debian package to RPM format
           alien -r --generate ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
           SPEC_FILE=./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
-      
-          # Add required dependencies to the spec file
+          # add dependencies
           sed -i '/^Group: Converted\/unknown/a Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool' "$SPEC_FILE"
-      
-          # Add installation script to the spec file
+          # add install section
           sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a %{_topdir}/${{ env.PACKAGE_FOLDER_NAME }}/usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
-      
-          # Filter and update the files section of the spec file
-          FILTERED_CONTENT=$(awk '/^%files/{flag=1; next} /flag && NF {print; next} /flag && !NF {exit}' "$SPEC_FILE" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
-      
-          # Clear existing %files section
+
+          FILTERED_CONTENT=$(echo "$(awk '/^%files/{flag=1; next} flag' "$SPEC_FILE")" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
           sed -i '/^%files/,/^$/d' "$SPEC_FILE"
+          echo "%files" >> "$SPEC_FILE"
+          echo "$FILTERED_CONTENT" | while IFS= read -r line; do
+              echo "$line" >> "$SPEC_FILE"
+          done
       
-          # Append the filtered content to the spec file
-          {
-              echo "%files"
-              echo "$FILTERED_CONTENT"
-          } >> "$SPEC_FILE"
-      
-          # Display the final spec file
           cat "$SPEC_FILE"
       # - name: create checksums
       #   run: |
