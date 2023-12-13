@@ -108,11 +108,11 @@ jobs:
           sudo apt update && sudo apt install -y alien
           alien -r --generate ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
           SPEC_FILE=./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
-          
+
           # add dependencies
           sed -i '/^Group: Converted\/unknown/a Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool' "$SPEC_FILE"
           # add install section
-          sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a %{_topdir}/${{ env.PACKAGE_FOLDER_NAME }}/usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
+          sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
 
           # Extract and filter the content of the %files section
           FILTERED_CONTENT=$(awk '/^%files/,/^$/{if (!/^%files/ && !/^$/) print}' "$SPEC_FILE" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
@@ -125,25 +125,27 @@ jobs:
               echo "%files"
               echo "$FILTERED_CONTENT"
           } >> "$SPEC_FILE"
-      
+
           cat "$SPEC_FILE"
 
           chmod -R 777 ${{ env.PACKAGE_FOLDER_NAME }}
           cd ${{ env.PACKAGE_FOLDER_NAME }}
 
-      - name: build RPM package
-        id: buildrpm9
-        uses: carlospeon/buildrpm@rocky9
+      - uses: Antikythera/build-rpm@v1
+        id: build_rpm
         with:
-          spec: ${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
-          version: ${{ env.PACKAGE_VERSION }}
+          spec_file: ${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
+          sources: |
+            ${{ env.PACKAGE_FOLDER_NAME }}
+          variables: |
+            _version=1.0.0
+            _foo=bar
 
       # - name: build RPM package
       #   id: rpm_build
       #   uses: naveenrajm7/rpmbuild@master
       #   with:
       #       spec_file: "${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec"
-
 
       - name: test
         run: |
