@@ -113,11 +113,17 @@ jobs:
 
           FILES_CONTENT=$(awk '/^%files/{flag=1; next} flag' "$SPEC_FILE")
           FILTERED_CONTENT=$(echo "$FILES_CONTENT" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
-          echo $FILTERED_CONTENT
+      
+          # Remove the original %files section
           sed -i '/^%files/,/^$/d' "$SPEC_FILE"
-          
+      
+          # Append the new %files section with filtered content
+          echo "%files" >> "$SPEC_FILE"
+          echo "$FILTERED_CONTENT" | while IFS= read -r line; do
+              echo "$line" >> "$SPEC_FILE"
+          done
+      
           cat "$SPEC_FILE"
-
       # - name: create checksums
       #   run: |
       #     md5sum ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME}} > ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
