@@ -117,10 +117,14 @@ jobs:
           # Extract and filter the content of the %files section
           FILTERED_CONTENT=$(awk '/^%files/,/^$/{if (!/^%files/ && !/^$/) print}' "$SPEC_FILE" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
 
-          # Replace the existing %files section with the filtered content
-          sed -i "/^%files/,/^$/c\
-          %files\n$FILTERED_CONTENT" "$SPEC_FILE"
+          # Remove the existing %files section
+          sed -i '/^%files/,/^$/d' "$SPEC_FILE"
 
+          # Append the new %files section with the filtered content
+          {
+              echo "%files"
+              echo "$FILTERED_CONTENT"
+          } >> "$SPEC_FILE"
       
           cat "$SPEC_FILE"
       # - name: create checksums
