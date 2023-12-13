@@ -88,7 +88,6 @@ jobs:
             License:    ${{ env.LICENSE }}
             Source0:    ${{ needs.setup.outputs.deb_pkg_renamed }}
             
-            BuildArch:  ${{ env.ARCH }}
             
             %description
             ${{ env.DESCRIPTION }}
@@ -118,4 +117,5 @@ jobs:
         id: build_rpm
         with:
           spec_file: ${{ needs.setup.outputs.name_bin }}/rpm.spec
-          sources:  ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
+          sources:  |
+            ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
