@@ -50,9 +50,7 @@ jobs:
             depends=(${{ env.DEPENDENCIES_ARCH }})
             pkgdesc='${{ env.DESCRIPTION }}'
             arch=('${{ env.ARCH }}')
-            url="https://github.com/${{ github.repository }}"
             license=('${{ env.LICENSE }}')
-            source=("\$url/releases/download/${{ env.VERSION }}/${{ needs.setup.outputs.deb_pkg_renamed }}")
 
             build() {
                 rm control.tar.gz
