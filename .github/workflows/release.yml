@@ -13,6 +13,8 @@ env:
   VERSION: 1.2.3
   DESCRIPTION: "A clipboard manager for Linux"
   LICENSE: MIT
+  DEPENDENCIES_ARCH: "'libappindicator-gtk3' 'webkit2gtk' 'gtk3' 'xdotool'"
+  DEPENDENCIES_RPM: "libappindicator-gtk3, webkit2gtk, gtk3, xdotool"
   DEB_PKG_PATH: ./ # Assuming this is static, else you can construct it similarly
 
 jobs:
@@ -36,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: copy deb package && create PKGBUILD
+      - name: copy deb package && create PKGBUILD file
         run: |
           mkdir -p ${{ needs.setup.outputs.name_bin }}
           cp -fr ${{ env.DEB_PKG_PATH }}/${{ needs.setup.outputs.deb_pkg_name}} ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
@@ -114,7 +116,7 @@ jobs:
       - name: read rpm package name
         run: |
           ls -la RPMS
-          
+
       - name: upload arch && rpm release && deb package
         uses: softprops/action-gh-release@v1
         with:
