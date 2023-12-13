@@ -115,7 +115,7 @@ jobs:
           echo "Original Files Content:"
           echo "$FILES_CONTENT"
 
-          FILTERED_CONTENT=$(echo "$FILES_CONTENT" | grep -E '\.(.+)|/clippy$')
+          FILTERED_CONTENT=$(echo "$FILES_CONTENT" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
           echo "Filtered Files Content:"
           echo "$FILTERED_CONTENT"
 
