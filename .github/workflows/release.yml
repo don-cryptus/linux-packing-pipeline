@@ -115,8 +115,7 @@ jobs:
           FILTERED_CONTENT=$(echo "$FILES_CONTENT" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
           echo $FILTERED_CONTENT
           sed -i '/^%files/,/^$/d' "$SPEC_FILE"
-
-          ls -la ${{ env.PACKAGE_FOLDER_NAME}}
+          
           cat "$SPEC_FILE"
 
       # - name: create checksums
