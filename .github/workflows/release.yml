@@ -114,7 +114,7 @@ jobs:
           sed -i '/%FILE%\/usr\/share\//d' "$SPEC_FILE"
           sed -i 's/%FILE%//' "$SPEC_FILE"
           ls -la ${{ env.PACKAGE_FOLDER_NAME}}
-          cat ./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
+          cat "$SPEC_FILE"
 
       # - name: create checksums
       #   run: |
