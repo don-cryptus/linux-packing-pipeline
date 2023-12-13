@@ -133,7 +133,7 @@ jobs:
         id: buildrpm9
         uses: carlospeon/buildrpm@rocky9
         with:
-          spec: ${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
+          spec: ${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
           version: ${{ env.PACKAGE_VERSION }}
 
       # - name: build RPM package
