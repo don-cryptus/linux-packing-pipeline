@@ -103,10 +103,8 @@ jobs:
             %install
             # Copy the extracted files to the build root
             cp -fr usr/ %{buildroot}
-            (cd %{buildroot} && find usr -type f) > filelist.txt
-            (cd %{buildroot} && find usr -type d | sed 's/^/%dir /') >> filelist.txt
 
-            %files -f filelist.txt
+
 
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
