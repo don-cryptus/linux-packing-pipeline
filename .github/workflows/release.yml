@@ -99,15 +99,15 @@ jobs:
             %build
             # Extract the Debian package
             rm -rf control.tar.gz
-            tar xvf %{SOURCE0}
+            tar xvf data.tar.gz
                         
             %install
             # Copy the extracted files to the build root
             cp -fr usr/ %{buildroot}
             
             %files
-            $(find usr/ -type f | sed 's/^/\//')
-            $(find usr/ -type d | sed 's/^/%dir \//')
+            usr/*
+
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
           ls -la ${{ needs.setup.outputs.name_bin }}
