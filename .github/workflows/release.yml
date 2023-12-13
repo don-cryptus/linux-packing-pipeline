@@ -80,7 +80,7 @@ jobs:
           cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/rpm.spec
             Name:       ${{ env.NAME }}
             Version:    ${{ env.VERSION }}
-            Release:    1
+            Release:    2
             Summary:    ${{ env.DESCRIPTION }}
 
             Requires:   libappindicator-gtk3, webkit2gtk, gtk3, xdotool
@@ -96,16 +96,12 @@ jobs:
             echo "Nothing to do"
             %setup -q 
             
-            %build
-            # Extract the Debian package
+            %builde
             rm -rf control.tar.gz
             tar xvf data.tar.gz
                         
             %install
-            # Copy the extracted files to the build root
             cp -fr usr/ %{buildroot}
-
-
 
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
