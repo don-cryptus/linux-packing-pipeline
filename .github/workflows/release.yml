@@ -78,15 +78,15 @@ jobs:
           mkdir -p ${{ needs.setup.outputs.name_bin }}
           cp -fr ${{ env.DEB_PKG_PATH }}/${{ needs.setup.outputs.deb_pkg_name}} ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
           cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/rpm.spec
-            Name:       ${{ env.NAME }}
-            Version:    ${{ env.VERSION }}
-            Release:    2
-            Summary:    ${{ env.DESCRIPTION }}
+            Name: ${{ env.NAME }}
+            Version: ${{ env.VERSION }}
+            Release: 2
+            Summary: ${{ env.DESCRIPTION }}
 
-            Requires:   libappindicator-gtk3, webkit2gtk, gtk3, xdotool
+            Requires: libappindicator-gtk3, webkit2gtk, gtk3, xdotool
             
-            License:    ${{ env.LICENSE }}
-            Source0:    ${{ needs.setup.outputs.deb_pkg_renamed }}
+            License: ${{ env.LICENSE }}
+            Source0: ${{ needs.setup.outputs.deb_pkg_renamed }}
             
             
             %description
