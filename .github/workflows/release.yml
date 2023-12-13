@@ -134,12 +134,9 @@ jobs:
       - uses: Antikythera/build-rpm@v1
         id: build_rpm
         with:
-          spec_file: ${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
+          spec_file: ${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
           sources: |
             ${{ env.PACKAGE_FOLDER_NAME }}
-          variables: |
-            _version=1.0.0
-            _foo=bar
 
       # - name: build RPM package
       #   id: rpm_build
