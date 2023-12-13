@@ -105,7 +105,7 @@ jobs:
 
       - name: create rpm package
         run: |
-          sudo apt update && sudo apt install -y sudo make alien
+          sudo apt update && sudo apt install -y alien
           sudo alien -r --generate ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
           sudo SPEC_FILE=./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
           sudo sed -i '/^Group: Converted\/unknown/a Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool' "$SPEC_FILE"
