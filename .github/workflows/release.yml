@@ -101,6 +101,8 @@ jobs:
 
           %files
           %{_bindir}/clippy
+          /usr/share/applications/clippy.desktop
+          /usr/share/icons/hicolor/**/*
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
 
