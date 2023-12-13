@@ -82,7 +82,7 @@ jobs:
           Version: ${{ env.VERSION }}
           Release: 1
           Summary: ${{ env.DESCRIPTION }}
-          Requires: libappindicator-gtk3, webkit2gtk, gtk3, xdotool
+          Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool
           License: ${{ env.LICENSE }}
           Source0: ${{ needs.setup.outputs.deb_pkg_renamed }}
 
