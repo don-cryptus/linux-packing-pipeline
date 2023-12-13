@@ -133,7 +133,7 @@ jobs:
         id: rpm_build
         uses: naveenrajm7/rpmbuild@master
         with:
-            spec_file: "${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec"
+            spec_file: "${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec"
 
 
       - name: test
