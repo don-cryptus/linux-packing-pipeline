@@ -89,9 +89,10 @@ jobs:
           %description
           ${{ env.DESCRIPTION }}
           
+          %prep
+          ar x %{SOURCE0}
           
           %build
-          ls -a
           rm -rf control.tar.gz
           tar xvf data.tar.gz
                       
