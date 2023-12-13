@@ -25,6 +25,8 @@ jobs:
       arch_pkg_name: ${{ env.NAME }}-bin-${{ env.VERSION }}-1-${{ env.ARCH }}.pkg.tar.zst
       rpm_pkg_name: ${{ env.NAME }}-${{ env.VERSION }}-1.${{ env.ARCH }}.rpm
       folder_name: ${{ env.NAME }}-${{ env.VERSION }}
+    steps:
+      - uses: actions/checkout@v4
 
   publish-release:
     needs: setup
@@ -32,7 +34,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: copy deb package && create PKGBUILD
         run: |
