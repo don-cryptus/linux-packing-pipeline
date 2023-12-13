@@ -80,7 +80,7 @@ jobs:
           cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/rpm.spec
             Name: ${{ env.NAME }}
             Version: ${{ env.VERSION }}
-            Release: 1
+            Release: 2
             Summary: ${{ env.DESCRIPTION }}
             Requires: libappindicator-gtk3, webkit2gtk, gtk3, xdotool
             License: ${{ env.LICENSE }}
