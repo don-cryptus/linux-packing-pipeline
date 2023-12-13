@@ -111,6 +111,10 @@ jobs:
           sources: |
             ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
 
+      - name: read rpm package name
+        run: |
+          ls -la RPMS
+          
       - name: upload arch && rpm release && deb package
         uses: softprops/action-gh-release@v1
         with:
