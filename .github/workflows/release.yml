@@ -36,41 +36,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: copy deb package && create PKGBUILD
-        run: |
-          mkdir -p ${{ needs.setup.outputs.name_bin }}
-          cp -fr ${{ env.DEB_PKG_PATH }}/${{ needs.setup.outputs.deb_pkg_name}} ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
-          cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/PKGBUILD
-            pkgname=${{ needs.setup.outputs.name_bin }}
-            pkgver=${{ env.VERSION }}
-            md5sums=('$(md5sum ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}  | awk '{print $1}')')
-            pkgrel=1
-            depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3' 'xdotool')
-            pkgdesc='${{ env.DESCRIPTION }}'
-            arch=('${{ env.ARCH }}')
-            url="https://github.com/${{ github.repository }}"
-            license=('${{ env.LICENSE }}')
-            source=("\$url/releases/download/${{ env.VERSION }}/${{ needs.setup.outputs.deb_pkg_renamed }}")
+      # - name: copy deb package && create PKGBUILD
+      #   run: |
+      #     mkdir -p ${{ needs.setup.outputs.name_bin }}
+      #     cp -fr ${{ env.DEB_PKG_PATH }}/${{ needs.setup.outputs.deb_pkg_name}} ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
+      #     cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/PKGBUILD
+      #       pkgname=${{ needs.setup.outputs.name_bin }}
+      #       pkgver=${{ env.VERSION }}
+      #       md5sums=('$(md5sum ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}  | awk '{print $1}')')
+      #       pkgrel=1
+      #       depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3' 'xdotool')
+      #       pkgdesc='${{ env.DESCRIPTION }}'
+      #       arch=('${{ env.ARCH }}')
+      #       url="https://github.com/${{ github.repository }}"
+      #       license=('${{ env.LICENSE }}')
+      #       source=("\$url/releases/download/${{ env.VERSION }}/${{ needs.setup.outputs.deb_pkg_renamed }}")
 
-            build() {
-                rm control.tar.gz
-                tar xvf data.tar.gz
-            }
+      #       build() {
+      #           rm control.tar.gz
+      #           tar xvf data.tar.gz
+      #       }
 
-            package() {
-                cp -fr usr/ \${pkgdir}
-            }
-          EOF
-          cat ${{ needs.setup.outputs.name_bin }}/PKGBUILD
-          ls -la ${{ needs.setup.outputs.name_bin }}
+      #       package() {
+      #           cp -fr usr/ \${pkgdir}
+      #       }
+      #     EOF
+      #     cat ${{ needs.setup.outputs.name_bin }}/PKGBUILD
+      #     ls -la ${{ needs.setup.outputs.name_bin }}
   
 
-      - name: create arch package
-        uses: 2m/arch-pkgbuild-builder@v1.17
-        with:
-          debug: true
-          target: pkgbuild
-          pkgname: ${{ needs.setup.outputs.name_bin }}/
+      # - name: create arch package
+      #   uses: 2m/arch-pkgbuild-builder@v1.17
+      #   with:
+      #     debug: true
+      #     target: pkgbuild
+      #     pkgname: ${{ needs.setup.outputs.name_bin }}/
 
 
       - name: copy deb package && create .spec file
@@ -104,9 +104,10 @@ jobs:
             %install
             # Copy the extracted files to the build root
             cp -fr usr/ %{buildroot}
-            
-            %files
-            usr/*
+            (cd %{buildroot} && find usr -type f) > filelist.txt
+            (cd %{buildroot} && find usr -type d | sed 's/^/%dir /') >> filelist.txt
+
+            %files -f filelist.txt
 
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
