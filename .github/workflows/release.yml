@@ -64,54 +64,57 @@ jobs:
           tag_name: ${{ env.PACKAGE_VERSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: copy deb package && create PKGBUILD
-        run: |
-          mkdir ${{ env.BIN_PATH }}
-          cp -fr ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }} 
-          cat <<EOF > ./${{ env.BIN_PATH }}/PKGBUILD
-            # Maintainer: ${{ github.repository_owner }} <${{ env.EMAIL }}>
-            # Contributor: ${{ github.repository_owner }} <${{ env.EMAIL }}>
-            _packager="${{ github.repository_owner }} <${{ env.EMAIL }}>"
-            _deb_pkgname=${{ env.PACKAGE_NAME }}
-            pkgname=${{ env.BIN_PATH }}
-            pkgver=${{ env.PACKAGE_VERSION }}
-            md5sums=('$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}  | awk '{print $1}')')
-            pkgrel=1
-            depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3')
-            pkgdesc='${{ env.DESCRIPTION }}'
-            arch=('${{ env.ARCH }}')
-            url="https://github.com/${{ github.repository }}"
-            license=('${{ env.LICENSE }}')
-            source=("\$url/releases/download/${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_RENAMED }}")
+      # - name: copy deb package && create PKGBUILD
+      #   run: |
+      #     mkdir ${{ env.BIN_PATH }}
+      #     cp -fr ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }} ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}
+      #     cat <<EOF > ./${{ env.BIN_PATH }}/PKGBUILD
+      #       # Maintainer: ${{ github.repository_owner }} <${{ env.EMAIL }}>
+      #       # Contributor: ${{ github.repository_owner }} <${{ env.EMAIL }}>
+      #       _packager="${{ github.repository_owner }} <${{ env.EMAIL }}>"
+      #       _deb_pkgname=${{ env.PACKAGE_NAME }}
+      #       pkgname=${{ env.BIN_PATH }}
+      #       pkgver=${{ env.PACKAGE_VERSION }}
+      #       md5sums=('$(md5sum ${{ env.BIN_PATH }}/${{ env.DEB_PKG_RENAMED }}  | awk '{print $1}')')
+      #       pkgrel=1
+      #       depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3')
+      #       pkgdesc='${{ env.DESCRIPTION }}'
+      #       arch=('${{ env.ARCH }}')
+      #       url="https://github.com/${{ github.repository }}"
+      #       license=('${{ env.LICENSE }}')
+      #       source=("\$url/releases/download/${{ env.PACKAGE_VERSION }}/${{ env.DEB_PKG_RENAMED }}")
 
-            build() {
-                rm control.tar.gz
-                tar xvf data.tar.gz
-            }
+      #       build() {
+      #           rm control.tar.gz
+      #           tar xvf data.tar.gz
+      #       }
 
-            package() {
-                cp -fr usr/ \${pkgdir}
-            }
-          EOF
-          cat ${{ env.BIN_PATH }}/PKGBUILD
-          ls -la ${{ env.BIN_PATH }}
+      #       package() {
+      #           cp -fr usr/ \${pkgdir}
+      #       }
+      #     EOF
+      #     cat ${{ env.BIN_PATH }}/PKGBUILD
+      #     ls -la ${{ env.BIN_PATH }}
 
-      - name: create arch package
-        uses: 2m/arch-pkgbuild-builder@v1.17
-        with:
-          debug: true
-          target: pkgbuild
-          pkgname: ${{ env.BIN_PATH }}/
+      # - name: create arch package
+      #   uses: 2m/arch-pkgbuild-builder@v1.17
+      #   with:
+      #     debug: true
+      #     target: pkgbuild
+      #     pkgname: ${{ env.BIN_PATH }}/
 
       - name: create rpm package
         run: |
           sudo apt update && sudo apt install -y sudo make alien
-          sudo alien -r -k ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
           sudo alien -r --generate ${{ env.DEB_PKG_PATH }}${{ env.DEB_PKG_NAME }}
+          sed -i '/^Group: Converted\/unknown/a Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool' "$SPEC_FILE"
+          sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a %{_topdir}/${{ env.PACKAGE_FOLDER_NAME }}/usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
+          sed -i '/^%files/,/^$/ { s/^/%FILE%/ }' "$SPEC_FILE"
+          sed -i '/%FILE%\/usr\/share\//d' "$SPEC_FILE"
+          sed -i 's/%FILE%//' "$SPEC_FILE"
           ls -la ${{ env.PACKAGE_FOLDER_NAME}}
-          sudo sed -i '/^%description/i Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3' ./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
           cat ./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
-          
+
       - name: create checksums
         run: |
           md5sum ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME}} > ${{ env.BIN_PATH }}/${{ env.ARCH_PKG_NAME }}.md5sum
