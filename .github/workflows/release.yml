@@ -78,33 +78,29 @@ jobs:
           mkdir -p ${{ needs.setup.outputs.name_bin }}
           cp -fr ${{ env.DEB_PKG_PATH }}/${{ needs.setup.outputs.deb_pkg_name}} ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
           cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/rpm.spec
-            Name: ${{ env.NAME }}
-            Version: ${{ env.VERSION }}
-            Release: 2
-            Summary: ${{ env.DESCRIPTION }}
-
-            Requires: libappindicator-gtk3, webkit2gtk, gtk3, xdotool
-            
-            License: ${{ env.LICENSE }}
-            Source0: ${{ needs.setup.outputs.deb_pkg_renamed }}
-            
-            
-            %description
-            ${{ env.DESCRIPTION }}
-            
-            %prep
-            echo "Nothing to do"
-            %setup -q 
-            
-            %build
-            rm -rf control.tar.gz
-            tar xvf data.tar.gz
-                        
-            %install
-            cp -fr usr/ %{buildroot}
-
-            %files
-            %{_bindir}/clippy
+          Name: clippy
+          Version: 1.2.3
+          Release: 2
+          Summary: A clipboard manager for Linux
+          Requires: libappindicator-gtk3, webkit2gtk, gtk3, xdotool
+          License: MIT
+          Source0: clippy-1.2.3-x86_64.deb
+          
+          %description
+          A clipboard manager for Linux
+          
+          %prep
+          # Preparation steps (if any)
+          
+          %build
+          rm -rf control.tar.gz
+          tar xvf data.tar.gz
+          
+          %install
+          cp -fr usr/ %{buildroot}
+          
+          %files
+          %{_bindir}/clippy
 
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
