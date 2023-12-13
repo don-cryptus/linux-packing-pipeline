@@ -91,7 +91,7 @@ jobs:
             ${{ env.DESCRIPTION }}
             
             %prep
-            echo "Nothing to do"
+            # echo "Nothing to do"
             
             %build
             rm -rf control.tar.gz
