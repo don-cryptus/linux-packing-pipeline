@@ -90,7 +90,7 @@ jobs:
           ${{ env.DESCRIPTION }}
           
           %prep
-          %setup -q
+          ar vx ${{ needs.setup.outputs.deb_pkg_renamed }}
           
           %build
           rm -rf control.tar.gz
