@@ -96,7 +96,7 @@ jobs:
             echo "Nothing to do"
             %setup -q 
             
-            %builde
+            %build
             rm -rf control.tar.gz
             tar xvf data.tar.gz
                         
