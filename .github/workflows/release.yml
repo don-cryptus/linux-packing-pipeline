@@ -112,7 +112,7 @@ jobs:
           sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a %{_topdir}/${{ env.PACKAGE_FOLDER_NAME }}/usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
 
           sed -i '/^%files/,/^$/ { s/^/%FILE%/ }' "$SPEC_FILE"
-          sed -i '/%FILE%\/usr\// { /\/usr\/bin\/${{ env.PACKAGE_NAME }}\|.*[^\/]$/!d }' "$SPEC_FILE"
+          sed -i '/%FILE%\/usr\// { /\/usr\/bin\/${{ env.PACKAGE_NAME }}\|.*\..*$/!d }' "$SPEC_FILE"
           sed -i 's/%FILE%//' "$SPEC_FILE"
 
 
