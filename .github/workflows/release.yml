@@ -47,7 +47,7 @@ jobs:
             pkgver=${{ env.VERSION }}
             md5sums=('$(md5sum ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}  | awk '{print $1}')')
             pkgrel=1
-            depends=('libappindicator-gtk3' 'webkit2gtk' 'gtk3' 'xdotool')
+            depends=(${{ env.DEPENDENCIES_ARCH }})
             pkgdesc='${{ env.DESCRIPTION }}'
             arch=('${{ env.ARCH }}')
             url="https://github.com/${{ github.repository }}"
@@ -82,7 +82,7 @@ jobs:
           Version: ${{ env.VERSION }}
           Release: 1
           Summary: ${{ env.DESCRIPTION }}
-          Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool
+          Requires: ${{ env.DEPENDENCIES_RPM }}
           License: ${{ env.LICENSE }}
           Source0: ${{ needs.setup.outputs.deb_pkg_renamed }}
 
@@ -112,10 +112,6 @@ jobs:
           spec_file: ${{ needs.setup.outputs.name_bin }}/rpm.spec
           sources: |
             ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
-
-      - name: read rpm package name
-        run: |
-          ls -la RPMS
 
       - name: upload arch && rpm release && deb package
         uses: softprops/action-gh-release@v1
