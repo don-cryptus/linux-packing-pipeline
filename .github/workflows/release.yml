@@ -110,9 +110,12 @@ jobs:
           SPEC_FILE=./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
           sed -i '/^Group: Converted\/unknown/a Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool' "$SPEC_FILE"
           sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a %{_topdir}/${{ env.PACKAGE_FOLDER_NAME }}/usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
+
           sed -i '/^%files/,/^$/ { s/^/%FILE%/ }' "$SPEC_FILE"
-          sed -i '/%FILE%\/usr\/share\//d' "$SPEC_FILE"
+          sed -i '/%FILE%\/usr\// { /\/usr\/bin\/clippy\|.*\..*/!d }' "$SPEC_FILE"
           sed -i 's/%FILE%//' "$SPEC_FILE"
+
+
           ls -la ${{ env.PACKAGE_FOLDER_NAME}}
           cat "$SPEC_FILE"
 
