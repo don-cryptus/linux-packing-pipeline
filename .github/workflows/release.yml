@@ -111,7 +111,7 @@ jobs:
           sed -i '/^Group: Converted\/unknown/a Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool' "$SPEC_FILE"
           sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a %{_topdir}/${{ env.PACKAGE_FOLDER_NAME }}/usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
 
-          FILTERED_CONTENT=$(echo "$(awk '/^%files/{flag=1; next} flag' "$SPEC_FILE")" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
+          FILTERED_CONTENT=$(echo "$(awk '/^%files/{flag=1; next} flag' \"$SPEC_FILE\")" | grep -E '\.(.+)|/${{ env.PACKAGE_NAME }}$')
       
           sed -i '/^%files/,/^$/d' "$SPEC_FILE"
       
