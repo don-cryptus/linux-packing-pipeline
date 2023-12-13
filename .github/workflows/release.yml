@@ -38,7 +38,7 @@ jobs:
 
       - name: copy deb package && create PKGBUILD
         run: |
-          mkdir ${{ needs.setup.outputs.name_bin }}
+          mkdir -p ${{ needs.setup.outputs.name_bin }}
           cp -fr ${{ env.DEB_PKG_PATH }}/${{ needs.setup.outputs.deb_pkg_name}} ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
           cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/PKGBUILD
             pkgname=${{ needs.setup.outputs.name_bin }}
@@ -75,7 +75,7 @@ jobs:
 
       - name: copy deb package && create .spec file
         run: |
-          mkdir ${{ needs.setup.outputs.name_bin }}
+          mkdir -p ${{ needs.setup.outputs.name_bin }}
           cp -fr ${{ env.DEB_PKG_PATH }}/${{ needs.setup.outputs.deb_pkg_name}} ${{ needs.setup.outputs.name_bin }}/${{ needs.setup.outputs.deb_pkg_renamed }}
           cat <<EOF > ./${{ needs.setup.outputs.name_bin }}/rpm.spec
             Name:       ${{ env.NAME }}
