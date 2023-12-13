@@ -108,7 +108,6 @@ jobs:
 
           EOF
           cat ${{ needs.setup.outputs.name_bin }}/rpm.spec
-          ls -la ${{ needs.setup.outputs.name_bin }}
 
 
       - uses: Antikythera/build-rpm@latest
