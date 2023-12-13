@@ -118,6 +118,7 @@ jobs:
       - name: read rpm package name
         run: |
           ls -la ${{ needs.setup.outputs.name_bin }}
+          ls -la RPMS
           ls -a
           echo rpm_package_name: ${{ steps.build_rpm.outputs.rpm_package_name }}
           echo rpm_package_path: ${{ steps.build_rpm.outputs.rpm_package_path }}
