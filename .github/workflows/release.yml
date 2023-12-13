@@ -110,9 +110,14 @@ jobs:
           SPEC_FILE=./${{ env.PACKAGE_FOLDER_NAME }}/${{ env.PACKAGE_FOLDER_NAME }}-2.spec
           sed -i '/^Group: Converted\/unknown/a Requires: javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool' "$SPEC_FILE"
           sed -i '/^%description/i %install\nmkdir -p %{buildroot}/usr\ncp -a %{_topdir}/${{ env.PACKAGE_FOLDER_NAME }}/usr/* %{buildroot}/usr/\n' "$SPEC_FILE"
-          
+
           FILES_CONTENT=$(awk '/^%files/{flag=1; next} flag' "$SPEC_FILE")
+          echo "Original Files Content:"
           echo "$FILES_CONTENT"
+
+          FILTERED_CONTENT=$(echo "$FILES_CONTENT" | grep -E '\.(.+)|/clippy$')
+          echo "Filtered Files Content:"
+          echo "$FILTERED_CONTENT"
 
           ls -la ${{ env.PACKAGE_FOLDER_NAME}}
           cat "$SPEC_FILE"
