@@ -94,7 +94,6 @@ jobs:
             
             %prep
             echo "Nothing to do"
-            %setup -q 
             
             %build
             rm -rf control.tar.gz
